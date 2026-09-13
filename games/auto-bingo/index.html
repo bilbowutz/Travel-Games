@@ -58,6 +58,7 @@
       <li>Fünf in einer Reihe, Spalte oder Diagonale: <strong>Bingo!</strong></li>
       <li>Versehentlich getippt? Einfach nochmal antippen.</li>
       <li>Der Spielstand bleibt gespeichert, auch wenn ihr die Seite schließt.</li>
+      <li>Mit dem Code aus den Einstellungen spielen alle Handys dasselbe Brett.</li>
     </ul>
   </details>
 
@@ -82,6 +83,22 @@
         <button type="button" data-size="4">4 × 4</button>
         <button type="button" data-size="5">5 × 5</button>
       </div>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label">Gemeinsam spielen</span>
+      <p class="code-display" id="board-code">–</p>
+      <p class="code-hint">Gleicher Code = gleiches Brett. Abgehakt wird auf jedem Handy selbst.</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--block" id="share-board">🔗 Brett teilen</button>
+        <button type="button" class="btn btn--block" id="share-result">🏆 Ergebnis teilen</button>
+      </div>
+      <form class="code-form" id="code-form">
+        <label class="visually-hidden" for="code-input">Code eingeben</label>
+        <input class="text-input code-input" id="code-input" type="text" maxlength="8"
+               placeholder="Code, z. B. K7M-2XQ" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        <button type="submit" class="btn">Laden</button>
+      </form>
     </div>
 
     <div class="sheet__group">
@@ -117,7 +134,7 @@
 
 <script src="../../assets/js/app.js"></script>
 <script src="items.js"></script>
-<script src="confetti.js"></script>
+<script src="../../assets/js/confetti.js"></script>
 <script src="bingo.js"></script>
 </body>
 </html>

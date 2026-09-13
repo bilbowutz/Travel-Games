@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wer würde eher …? – Travel Games</title>
+<meta name="description" content="Wer würde eher …? – das Familienspiel für unterwegs. 124 Fragen, Punkte für alle, offline spielbar und ohne Anmeldung.">
+<meta name="theme-color" content="#2f6bff">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Wer würde eher">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="game.css">
+<script>
+  try {
+    var m = JSON.parse(localStorage.getItem('travelgames.theme'));
+    if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-theme', m);
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__bar">
+      <a class="back-link" href="../../">‹ Spiele</a>
+      <span class="spacer"></span>
+      <button type="button" class="icon-btn" id="theme-toggle">🌗</button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen">⚙️</button>
+    </div>
+    <h1 class="hero__title">Wer würde eher …? 🤔</h1>
+    <p class="hero__sub">Vorlesen, alle zeigen gleichzeitig – wer die meisten Finger abbekommt, kriegt den Punkt.</p>
+  </div>
+</header>
+
+<main class="wrap game-main">
+
+  <!-- Namen eintragen -->
+  <section id="setup">
+    <div class="panel">
+      <h2>Wer spielt mit?</h2>
+      <p class="panel__hint">Mindestens zwei Namen. Das Handy wandert reihum, vorgelesen wird laut.</p>
+      <ul class="name-list" id="name-list"></ul>
+      <button type="button" class="btn btn--block" id="add-player">＋ Mitspieler:in</button>
+    </div>
+  </section>
+
+  <!-- Spiel -->
+  <section id="play" hidden>
+    <div class="status" aria-label="Fortschritt">
+      <p class="status__count"><span id="q-index">1</span><small> / <span id="q-total">0</span></small></p>
+      <div class="status__bar" role="progressbar" aria-label="Gespielte Fragen" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="q-progress">
+        <div class="status__fill" id="q-fill"></div>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <p class="question-card__lead">Wer würde eher …</p>
+      <p class="question-card__text" id="question">…</p>
+    </div>
+
+    <p class="play-hint">Tippt auf die Person, auf die die meisten zeigen.</p>
+    <ul class="player-grid" id="player-grid"></ul>
+  </section>
+
+  <details class="rules">
+    <summary>So wird gespielt</summary>
+    <ul>
+      <li>Eine Person liest die Frage laut vor.</li>
+      <li>Bei „drei, zwei, eins“ zeigen alle gleichzeitig auf jemanden.</li>
+      <li>Wer die meisten Finger abbekommt, tippt sich selbst an und bekommt den Punkt.</li>
+      <li>Unentschieden? Einfach überspringen – oder beiden einen Punkt geben.</li>
+      <li>Mit dem Code aus den Einstellungen bekommen alle Handys dieselben Fragen.</li>
+    </ul>
+  </details>
+
+</main>
+
+<div class="actionbar">
+  <div class="actionbar__inner" id="setup-actions">
+    <button type="button" class="btn btn--primary" id="start-game">Los geht’s</button>
+  </div>
+  <div class="actionbar__inner" id="play-actions" hidden>
+    <button type="button" class="btn" id="skip-question">Überspringen</button>
+    <button type="button" class="btn btn--primary" id="open-scores">🏆 Punktestand</button>
+  </div>
+</div>
+
+<!-- Punktestand -->
+<dialog class="sheet" id="scores">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2 id="scores-title">Punktestand</h2>
+    <ol class="score-list" id="score-list"></ol>
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--primary" id="close-scores">Weiterspielen</button>
+      <button type="button" class="btn btn--block" id="share-scores">🔗 Punktestand teilen</button>
+      <button type="button" class="btn btn--block btn--ghost" id="new-round">Neue Runde starten</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Einstellungen -->
+<dialog class="sheet" id="settings">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2>Einstellungen</h2>
+
+    <div class="sheet__group">
+      <span class="sheet__label">Gemeinsam spielen</span>
+      <p class="code-display" id="game-code">–</p>
+      <p class="code-hint">Gleicher Code = gleiche Fragen in gleicher Reihenfolge. Punkte zählt jedes Handy für sich.</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--block" id="share-game">🔗 Fragenrunde teilen</button>
+      </div>
+      <form class="code-form" id="code-form">
+        <label class="visually-hidden" for="code-input">Code eingeben</label>
+        <input class="text-input code-input" id="code-input" type="text" maxlength="8"
+               placeholder="Code, z. B. K7M-2XQ" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        <button type="submit" class="btn">Laden</button>
+      </form>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label">Mitspieler:innen</span>
+      <p class="code-hint" id="player-summary">–</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--block" id="edit-players">Namen bearbeiten</button>
+        <button type="button" class="btn btn--block btn--danger" id="reset-scores">Punkte zurücksetzen</button>
+      </div>
+    </div>
+
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--primary" id="close-settings">Fertig</button>
+    </div>
+
+    <p class="sheet__hint" id="storage-hint">Alles wird nur lokal auf diesem Gerät gespeichert.</p>
+  </div>
+</dialog>
+
+<!-- Bestätigung -->
+<dialog class="confirm" id="confirm">
+  <h2 id="confirm-title">Sicher?</h2>
+  <p id="confirm-text"></p>
+  <div class="sheet__actions">
+    <button type="button" class="btn btn--block btn--primary" id="confirm-ok">Ja</button>
+    <button type="button" class="btn btn--block btn--ghost" id="confirm-cancel">Abbrechen</button>
+  </div>
+</dialog>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="toast-host" role="status" aria-live="polite"></div>
+
+<script src="../../assets/js/app.js"></script>
+<script src="questions.js"></script>
+<script src="../../assets/js/confetti.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

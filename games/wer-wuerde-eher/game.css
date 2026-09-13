@@ -1,0 +1,228 @@
+/* Wer würde eher …? – spielspezifische Styles */
+
+/* ---------- Namen eintragen ---------- */
+
+.panel {
+  margin-top: -18px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.panel h2 { font-size: 20px; }
+
+.panel__hint {
+  margin: 8px 0 18px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.name-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.name-row__number {
+  width: 22px;
+  flex: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.name-row__remove {
+  flex: none;
+  width: var(--tap);
+  height: var(--tap);
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 19px;
+  line-height: 1;
+  transition: background .15s ease, color .15s ease;
+}
+
+.name-row__remove:hover { color: var(--text); }
+.name-row__remove[hidden] { display: none; }
+
+/* ---------- Fragekarte ---------- */
+
+.question-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  min-height: 190px;
+  margin-top: 18px;
+  padding: 26px 22px;
+  border-radius: var(--radius);
+  background: var(--bg-hero);
+  color: #fff;
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.question-card__lead {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .75);
+}
+
+.question-card__text {
+  font-size: clamp(21px, 6vw, 28px);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -.015em;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+.question-card.is-new { animation: card-in .28s ease both; }
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(10px) scale(.985); }
+}
+
+.play-hint {
+  margin: 16px 0 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ---------- Namensbuttons ---------- */
+
+.player-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.player-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 58px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  font-weight: 700;
+  text-align: left;
+  transition: transform .12s ease, border-color .15s ease, background .15s ease;
+}
+
+.player-btn:active {
+  transform: scale(.96);
+  border-color: var(--accent);
+}
+
+.player-btn__name {
+  min-width: 0;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+.player-btn__score {
+  flex: none;
+  min-width: 30px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.player-btn.is-awarded {
+  border-color: var(--found);
+  background: var(--found-soft);
+  animation: award-pop .34s ease;
+}
+
+.player-btn.is-awarded .player-btn__score {
+  background: var(--found);
+  color: #fff;
+}
+
+@keyframes award-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* ---------- Punktestand ---------- */
+
+.score-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: rank;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-weight: 600;
+}
+
+.score-row__rank {
+  flex: none;
+  width: 26px;
+  font-size: 17px;
+  text-align: center;
+}
+
+.score-row__name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.score-row__points {
+  flex: none;
+  font-size: 19px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-row--lead {
+  border-color: var(--gold);
+  background: var(--gold-soft);
+}
+
+.score-row--lead .score-row__points { color: var(--gold); }

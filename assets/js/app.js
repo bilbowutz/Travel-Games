@@ -138,15 +138,146 @@
 
   /* ---------- Zufall ---------- */
 
-  TG.shuffle = function (list) {
+  /* Mulberry32: gleicher Startwert -> gleiche Zahlenfolge.
+     Damit kommt auf jedem Handy dasselbe Brett bzw. dieselbe Fragenreihenfolge heraus. */
+  TG.rng = function (seed) {
+    var a = seed >>> 0;
+    return function () {
+      a = a + 0x6D2B79F5 >>> 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  };
+
+  TG.randomSeed = function () {
+    return Math.floor(Math.random() * 0x2000000); /* 25 Bit */
+  };
+
+  /* random ist optional – ohne Angabe echter Zufall, mit TG.rng(seed) reproduzierbar. */
+  TG.shuffle = function (list, random) {
+    var rnd = random || Math.random;
     var out = list.slice();
     for (var i = out.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
+      var j = Math.floor(rnd() * (i + 1));
       var tmp = out[i];
       out[i] = out[j];
       out[j] = tmp;
     }
     return out;
+  };
+
+  /* ---------- Teilbare Codes (Crockford-Base32) ---------- */
+
+  var ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+
+  TG.code = {
+    LENGTH: 6,
+
+    /* Tippfehler verzeihen: I und L sind eine 1, O ist eine 0. */
+    clean: function (text) {
+      return String(text || '')
+        .toUpperCase()
+        .replace(/[IL]/g, '1')
+        .replace(/O/g, '0')
+        .replace(/[^0-9A-Z]/g, '')
+        .split('')
+        .filter(function (c) { return ALPHABET.indexOf(c) > -1; })
+        .join('');
+    },
+
+    fromNumber: function (value, length) {
+      var len = length || TG.code.LENGTH;
+      var n = Math.floor(value);
+      var out = '';
+      for (var i = 0; i < len; i++) {
+        out = ALPHABET.charAt(n % 32) + out;
+        n = Math.floor(n / 32);
+      }
+      return out;
+    },
+
+    toNumber: function (text) {
+      var clean = TG.code.clean(text);
+      if (clean.length !== TG.code.LENGTH) return null;
+      var n = 0;
+      for (var i = 0; i < clean.length; i++) {
+        n = n * 32 + ALPHABET.indexOf(clean.charAt(i));
+      }
+      return n;
+    },
+
+    /* Nur zur Anzeige: ABC123 -> ABC-123 */
+    format: function (code) {
+      if (!code || code.length !== TG.code.LENGTH) return code || '';
+      return code.slice(0, 3) + '-' + code.slice(3);
+    }
+  };
+
+  /* ---------- Teilen ---------- */
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text)
+        .then(function () { return 'copied'; })
+        .catch(function () { return legacyCopy(text); });
+    }
+    return Promise.resolve(legacyCopy(text));
+  }
+
+  function legacyCopy(text) {
+    try {
+      var field = document.createElement('textarea');
+      field.value = text;
+      field.setAttribute('readonly', '');
+      field.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(field);
+      field.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(field);
+      return ok ? 'copied' : 'failed';
+    } catch (e) {
+      return 'failed';
+    }
+  }
+
+  /* Antwort: 'shared' | 'copied' | 'cancelled' | 'failed' */
+  TG.share = function (data) {
+    var fallback = data.text + (data.url ? '\n' + data.url : '');
+    if (navigator.share) {
+      return navigator.share(data).then(
+        function () { return 'shared'; },
+        function (error) {
+          if (error && error.name === 'AbortError') return 'cancelled';
+          return copyText(fallback);
+        }
+      );
+    }
+    return copyText(fallback);
+  };
+
+  /* Meldet das Ergebnis von TG.share passend zurück. */
+  TG.reportShare = function (result, copiedMessage) {
+    if (result === 'copied') TG.toast(copiedMessage || 'In die Zwischenablage kopiert');
+    else if (result === 'failed') TG.toast('Teilen hat nicht geklappt');
+  };
+
+  /* Adresse dieser Seite ohne #-Anhang. */
+  TG.pageUrl = function () {
+    return location.href.split('#')[0];
+  };
+
+  /* Liest ?/#c=CODE aus der Adresse. */
+  TG.codeFromLocation = function () {
+    var match = /[#&?]c=([0-9a-z]+)/i.exec(location.hash + location.search);
+    return match ? TG.code.clean(match[1]) : null;
+  };
+
+  /* Entfernt den #-Anhang, ohne die Seite neu zu laden. */
+  TG.clearHash = function () {
+    if (window.history && history.replaceState) {
+      history.replaceState(null, '', TG.pageUrl());
+    }
   };
 
   /* ---------- Service Worker: Offline im Funkloch ---------- */

@@ -1,11 +1,13 @@
-/* Auto Bingo – Spiellogik. Alles läuft im Browser, gespeichert wird nur lokal. */
+/* Auto Bingo – Spiellogik. Alles läuft im Browser, gespeichert wird nur lokal.
+   Das Brett entsteht aus einem Startwert, der als kurzer Code teilbar ist:
+   gleicher Code = gleiches Brett auf jedem Handy. */
 (function (window, document) {
   'use strict';
 
   var TG = window.TG;
   var STATE_KEY = 'autobingo.state';
   var STATS_KEY = 'autobingo.stats';
-  var STATE_VERSION = 1;
+  var STATE_VERSION = 2;
   var SIZES = [3, 4, 5];
   var DEFAULT_SIZE = 5;
   var RARE_SHARE = 0.25;
@@ -28,6 +30,11 @@
     statFound: document.getElementById('stat-found'),
     statBingos: document.getElementById('stat-bingos'),
     storageHint: document.getElementById('storage-hint'),
+    boardCode: document.getElementById('board-code'),
+    shareBoard: document.getElementById('share-board'),
+    shareResult: document.getElementById('share-result'),
+    codeForm: document.getElementById('code-form'),
+    codeInput: document.getElementById('code-input'),
     confirm: document.getElementById('confirm'),
     confirmTitle: document.getElementById('confirm-title'),
     confirmText: document.getElementById('confirm-text'),
@@ -39,25 +46,43 @@
   var stats = null;
   var tileNodes = [];
 
+  /* ---------------- Code <-> Brett ---------------- */
+
+  /* Der Code trägt Startwert und Brettgröße: 25 Bit Seed, 2 Bit Größe. */
+  function encodeCode(seed, size) {
+    return TG.code.fromNumber(seed * 4 + SIZES.indexOf(size));
+  }
+
+  function decodeCode(text) {
+    var value = TG.code.toNumber(text);
+    if (value === null) return null;
+    var size = SIZES[value % 4];
+    if (!size) return null;
+    return { seed: Math.floor(value / 4), size: size };
+  }
+
   /* ---------------- Brett bauen ---------------- */
 
-  function pickItems(count) {
+  function pickItems(count, rnd) {
     var pool = TG.autoBingoItems;
-    var rares = TG.shuffle(pool.filter(function (i) { return i.rare; }));
-    var commons = TG.shuffle(pool.filter(function (i) { return !i.rare; }));
+    var rares = TG.shuffle(pool.filter(function (i) { return i.rare; }), rnd);
+    var commons = TG.shuffle(pool.filter(function (i) { return !i.rare; }), rnd);
     var rareCount = Math.min(rares.length, Math.max(1, Math.round(count * RARE_SHARE)));
     var picked = rares.slice(0, rareCount).concat(commons.slice(0, count - rareCount));
 
     // Sicherheitsnetz, falls der Pool mal kleiner wird als das Brett.
     for (var i = picked.length; i < count; i++) picked.push(pool[i % pool.length]);
 
-    return TG.shuffle(picked).slice(0, count);
+    return TG.shuffle(picked, rnd).slice(0, count);
   }
 
-  function buildState(size) {
+  function buildState(size, seed) {
+    if (typeof seed !== 'number') seed = TG.randomSeed();
+
     var total = size * size;
     var freeIndex = size % 2 === 1 && size >= 5 ? (total - 1) / 2 : -1;
-    var items = pickItems(total - (freeIndex >= 0 ? 1 : 0));
+    var rnd = TG.rng(seed + size * 7919);
+    var items = pickItems(total - (freeIndex >= 0 ? 1 : 0), rnd);
     var cells = [];
     var next = 0;
 
@@ -70,7 +95,16 @@
       }
     }
 
-    return { v: STATE_VERSION, size: size, cells: cells, lines: [], full: false, created: Date.now() };
+    return {
+      v: STATE_VERSION,
+      size: size,
+      seed: seed,
+      code: encodeCode(seed, size),
+      cells: cells,
+      lines: [],
+      full: false,
+      created: Date.now()
+    };
   }
 
   /* ---------------- Reihen, Spalten, Diagonalen ---------------- */
@@ -129,6 +163,7 @@
     return !!candidate &&
       candidate.v === STATE_VERSION &&
       SIZES.indexOf(candidate.size) > -1 &&
+      typeof candidate.code === 'string' &&
       Array.isArray(candidate.cells) &&
       candidate.cells.length === candidate.size * candidate.size &&
       candidate.cells.every(function (c) { return c && typeof c.label === 'string'; });
@@ -191,7 +226,7 @@
       tile.classList.toggle('is-checked', !!cell.checked);
       tile.classList.toggle('is-line', !!inLine[index]);
       if (!cell.free) {
-        var spoken = cell.label.replace(/\u00AD/g, '');
+        var spoken = cell.label.replace(/­/g, '');
         tile.setAttribute('aria-pressed', cell.checked ? 'true' : 'false');
         tile.setAttribute('aria-label', spoken + (cell.checked ? ' – gefunden' : ' – noch offen'));
         total++;
@@ -221,6 +256,10 @@
     Array.prototype.forEach.call(el.sizePicker.querySelectorAll('button'), function (button) {
       button.setAttribute('aria-pressed', Number(button.dataset.size) === state.size ? 'true' : 'false');
     });
+  }
+
+  function renderCode() {
+    el.boardCode.textContent = TG.code.format(state.code);
   }
 
   /* ---------------- Spielzüge ---------------- */
@@ -265,17 +304,47 @@
     }
   }
 
-  function startNewGame(size) {
-    state = buildState(size || state.size);
-    stats.games++;
+  function applyState(next, countAsNewGame) {
+    state = next;
+    if (countAsNewGame) stats.games++;
     save();
     saveStats();
     renderBoard();
     renderSizePicker();
+    renderCode();
+  }
+
+  function startNewGame(size) {
+    applyState(buildState(size || state.size), true);
   }
 
   function hasProgress() {
     return state.cells.some(function (c) { return c.checked && !c.free; });
+  }
+
+  /* ---------------- Teilen ---------------- */
+
+  function boardUrl() {
+    return TG.pageUrl() + '#c=' + state.code;
+  }
+
+  function resultText() {
+    var rows = [];
+    for (var r = 0; r < state.size; r++) {
+      var row = '';
+      for (var c = 0; c < state.size; c++) {
+        var cell = state.cells[r * state.size + c];
+        row += cell.free ? '⭐' : (cell.checked ? '✅' : '⬜');
+      }
+      rows.push(row);
+    }
+
+    var playable = state.cells.filter(function (c) { return !c.free; });
+    var found = playable.filter(function (c) { return c.checked; }).length;
+
+    return '🚗 Auto Bingo ' + TG.code.format(state.code) + '\n' +
+      rows.join('\n') + '\n' +
+      found + '/' + playable.length + ' gefunden · ' + (state.lines || []).length + '× Bingo';
   }
 
   /* ---------------- Dialoge ---------------- */
@@ -363,14 +432,50 @@
         .then(function (yes) { if (yes) apply(); });
     });
 
-    el.resetStats.addEventListener('click', function () {
-      askConfirm('Statistik löschen?', 'Spiele, Funde und Bingos werden auf null gesetzt.', 'Löschen')
-        .then(function (yes) {
-          if (!yes) return;
-          stats = { games: 0, found: 0, bingos: 0 };
-          saveStats();
-          TG.toast('Statistik zurückgesetzt');
-        });
+    el.shareBoard.addEventListener('click', function () {
+      TG.share({
+        title: 'Auto Bingo',
+        text: 'Spielt mit beim Auto Bingo! Code: ' + TG.code.format(state.code),
+        url: boardUrl()
+      }).then(function (result) {
+        TG.reportShare(result, 'Link kopiert – jetzt einfügen und verschicken');
+      });
+    });
+
+    el.shareResult.addEventListener('click', function () {
+      TG.share({
+        title: 'Auto Bingo',
+        text: resultText(),
+        url: boardUrl()
+      }).then(function (result) {
+        TG.reportShare(result, 'Ergebnis kopiert');
+      });
+    });
+
+    el.codeForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var typed = TG.code.clean(el.codeInput.value);
+      var decoded = decodeCode(typed);
+
+      if (!decoded) {
+        TG.toast('Code nicht erkannt – bitte prüfen');
+        return;
+      }
+      if (typed === state.code) {
+        el.codeInput.value = '';
+        TG.toast('Das ist schon euer Brett 🙂');
+        return;
+      }
+
+      function apply() {
+        el.codeInput.value = '';
+        applyState(buildState(decoded.size, decoded.seed), true);
+        TG.toast('Brett ' + TG.code.format(typed) + ' geladen');
+      }
+
+      if (!hasProgress()) { apply(); return; }
+      askConfirm('Brett wechseln?', 'Euer aktuelles Brett und alle Häkchen gehen verloren.', 'Wechseln')
+        .then(function (yes) { if (yes) apply(); });
     });
 
     TG.bindThemeToggle(document.getElementById('theme-toggle'));
@@ -382,7 +487,14 @@
     stats = loadStats();
 
     var saved = TG.store.get(STATE_KEY, null);
-    if (isValidState(saved)) {
+    var shared = decodeCode(TG.codeFromLocation());
+    var fresh = false;
+
+    if (shared && (!isValidState(saved) || saved.code !== encodeCode(shared.seed, shared.size))) {
+      // Geteilter Link: gemeinsames Brett aufbauen
+      state = buildState(shared.size, shared.seed);
+      fresh = true;
+    } else if (isValidState(saved)) {
       state = saved;
       state.lines = completedLines().map(function (line) { return line.key; });
       if (typeof state.full !== 'boolean') {
@@ -390,10 +502,13 @@
       }
     } else {
       state = buildState(DEFAULT_SIZE);
-      stats.games++;
-      saveStats();
-      save();
+      fresh = true;
     }
+
+    if (fresh) stats.games++;
+    save();
+    saveStats();
+    TG.clearHash();
 
     if (!TG.store.available) {
       el.storageHint.textContent = 'Hinweis: Dieser Browser erlaubt keinen lokalen Speicher – der Spielstand geht beim Schließen verloren.';
@@ -402,7 +517,13 @@
     renderBoard();
     renderStats();
     renderSizePicker();
+    renderCode();
     bindEvents();
+
+    if (shared && fresh) {
+      TG.toast('Gemeinsames Brett ' + TG.code.format(state.code) + ' geladen', { duration: 2600 });
+    }
+
     TG.registerServiceWorker('../../sw.js');
   }
 

@@ -14,6 +14,15 @@
       status: 'ready'
     },
     {
+      id: 'wer-wuerde-eher',
+      name: 'Wer würde eher …?',
+      emoji: '🤔',
+      description: '124 Fragen, alle zeigen gleichzeitig – Punkte für die Mehrheit.',
+      href: 'games/wer-wuerde-eher/',
+      badge: 'Spielen',
+      status: 'ready'
+    },
+    {
       id: 'kennzeichen-jagd',
       name: 'Kennzeichen-Jagd',
       emoji: '🔠',
