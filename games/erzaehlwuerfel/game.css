@@ -1,0 +1,64 @@
+/* Erzählwürfel – spielspezifische Styles */
+
+.story-opener {
+  margin: 4px 0 0;
+  padding: 18px 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: clamp(19px, 5.4vw, 24px);
+  font-weight: 600;
+  letter-spacing: -.02em;
+  text-align: center;
+}
+
+.story-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.story-grid[data-count="3"] { grid-template-columns: repeat(3, 1fr); }
+
+.story-die {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 22%;
+  background: var(--surface);
+  font-size: clamp(30px, 11vw, 52px);
+  line-height: 1;
+  transition: opacity .18s ease, transform .12s ease, background .18s ease;
+}
+
+.story-die:active { transform: scale(.94); }
+
+.story-die.is-used {
+  background: var(--fill);
+  opacity: .4;
+}
+
+.story-die.is-used::after {
+  content: "";
+  position: absolute;
+}
+
+.story-die.is-rolling { animation: story-roll .34s ease; }
+
+@keyframes story-roll {
+  0% { transform: scale(.7) rotate(-8deg); opacity: 0; }
+  70% { transform: scale(1.06) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); }
+}
+
+.story-hint {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}

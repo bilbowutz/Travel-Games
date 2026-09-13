@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Erzählwürfel – Travel Games</title>
+<meta name="description" content="Erzählwürfel für unterwegs: Symbole würfeln und daraus gemeinsam eine Geschichte bauen. Offline spielbar.">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Erzählwürfel">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="game.css">
+<script>
+  try {
+    var m = JSON.parse(localStorage.getItem('travelgames.theme'));
+    if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-theme', m);
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__bar">
+      <a class="back-link" href="../../"><span data-icon="chevron-left"></span>Spiele</a>
+      <span class="spacer"></span>
+      <button type="button" class="icon-btn" id="theme-toggle"></button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen" data-icon="gear"></button>
+    </div>
+    <h1 class="hero__title">Erzählwürfel</h1>
+    <p class="hero__sub">Würfeln, und dann reihum eine Geschichte bauen – jedes Symbol muss vorkommen.</p>
+  </div>
+</header>
+
+<main class="wrap game-main">
+
+  <p class="story-opener" id="opener">Es war einmal …</p>
+
+  <ul class="story-grid" id="dice"></ul>
+
+  <p class="story-hint" id="hint">Tippe ein Symbol an, wenn es in der Geschichte vorkam.</p>
+
+  <details class="rules">
+    <summary>So wird gespielt</summary>
+    <ul>
+      <li>Würfeln, dann fängt jemand mit dem Satzanfang an.</li>
+      <li>Wer dran ist, baut ein Symbol in die Geschichte ein und tippt es an.</li>
+      <li>Dann ist die nächste Person dran – bis alle Symbole verbraucht sind.</li>
+      <li>Es gibt keine Punkte und keine falschen Geschichten.</li>
+      <li>Mit dem Code aus den Einstellungen bekommt ein zweites Handy dieselben Symbole.</li>
+    </ul>
+  </details>
+
+</main>
+
+<div class="actionbar">
+  <div class="actionbar__inner">
+    <button type="button" class="btn" id="reset-used">Alle zurück</button>
+    <button type="button" class="btn btn--primary" id="roll">Neu würfeln</button>
+  </div>
+</div>
+
+<dialog class="sheet" id="settings">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2>Einstellungen</h2>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="count-label">Wie viele Symbole</span>
+      <div class="segmented" role="group" aria-labelledby="count-label" id="count-picker">
+        <button type="button" data-count="3">3</button>
+        <button type="button" data-count="6">6</button>
+        <button type="button" data-count="9">9</button>
+      </div>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label">Gemeinsam spielen</span>
+      <p class="code-display" id="game-code">–</p>
+      <p class="code-hint">Gleicher Code = gleiche Symbole. Praktisch, wenn zwei Autos zusammen unterwegs sind.</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--block" id="share-game">Symbole teilen</button>
+        <button type="button" class="btn btn--block" id="show-qr">QR-Code zeigen</button>
+      </div>
+      <form class="code-form" id="code-form">
+        <label class="visually-hidden" for="code-input">Code eingeben</label>
+        <input class="text-input code-input" id="code-input" type="text" maxlength="8"
+               placeholder="Code, z. B. K7M-2XQ" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        <button type="submit" class="btn">Laden</button>
+      </form>
+    </div>
+
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--primary" id="close-settings">Fertig</button>
+    </div>
+    <p class="sheet__hint" id="storage-hint">Alles wird nur lokal auf diesem Gerät gespeichert.</p>
+  </div>
+</dialog>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="toast-host" role="status" aria-live="polite"></div>
+
+<script src="../../assets/js/app.js"></script>
+<script src="../../assets/js/qr.js"></script>
+<script src="../../assets/js/confetti.js"></script>
+<script src="symbols.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

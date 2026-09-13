@@ -37,6 +37,14 @@
       status: 'ready'
     },
     {
+      id: 'erzaehlwuerfel',
+      name: 'Erzählwürfel',
+      emoji: '🎴',
+      description: 'Symbole würfeln, gemeinsam eine Geschichte bauen',
+      href: 'games/erzaehlwuerfel/',
+      status: 'ready'
+    },
+    {
       id: 'kaesekaestchen',
       name: 'Käsekästchen',
       emoji: '▫️',
