@@ -84,9 +84,7 @@
   };
 
   var state = null;
-  var context = el.canvas.getContext('2d');
-  var strokes = [];          /* nur im Speicher – ein Bild muss kein Reload überleben */
-  var activeStroke = null;
+  var sketch = null;
   var colorId = COLORS[0].id;
   var timerHandle = null;
 
@@ -148,83 +146,9 @@
 
   /* ---------------- Zeichnen ---------------- */
 
-  function currentColor() {
+  function colorHex() {
     for (var i = 0; i < COLORS.length; i++) if (COLORS[i].id === colorId) return COLORS[i].hex;
     return COLORS[0].hex;
-  }
-
-  function sizeCanvas() {
-    var rect = el.canvas.getBoundingClientRect();
-    if (!rect.width) return;
-
-    var ratio = Math.min(window.devicePixelRatio || 1, 3);
-    el.canvas.width = Math.round(rect.width * ratio);
-    el.canvas.height = Math.round(rect.height * ratio);
-    context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    repaint();
-  }
-
-  function repaint() {
-    var rect = el.canvas.getBoundingClientRect();
-    context.clearRect(0, 0, rect.width || el.canvas.width, rect.height || el.canvas.height);
-    context.lineCap = 'round';
-    context.lineJoin = 'round';
-
-    strokes.forEach(function (stroke) {
-      if (!stroke.points.length) return;
-      context.strokeStyle = stroke.color;
-      context.lineWidth = stroke.width;
-      context.beginPath();
-      context.moveTo(stroke.points[0][0], stroke.points[0][1]);
-
-      for (var i = 1; i < stroke.points.length; i++) {
-        var previous = stroke.points[i - 1];
-        var point = stroke.points[i];
-        context.quadraticCurveTo(previous[0], previous[1],
-          (previous[0] + point[0]) / 2, (previous[1] + point[1]) / 2);
-      }
-
-      if (stroke.points.length === 1) {
-        context.lineTo(stroke.points[0][0] + 0.1, stroke.points[0][1]);
-      }
-      context.stroke();
-    });
-  }
-
-  function canvasPoint(event) {
-    var rect = el.canvas.getBoundingClientRect();
-    return [event.clientX - rect.left, event.clientY - rect.top];
-  }
-
-  function canDraw() {
-    return state.phase === 'draw' && !el.canvas.classList.contains('is-locked');
-  }
-
-  function bindCanvas() {
-    el.canvas.addEventListener('pointerdown', function (event) {
-      if (!canDraw()) return;
-      event.preventDefault();
-      if (el.canvas.setPointerCapture) el.canvas.setPointerCapture(event.pointerId);
-      activeStroke = { color: currentColor(), width: 5, points: [canvasPoint(event)] };
-      strokes.push(activeStroke);
-      repaint();
-      renderTools();
-    });
-
-    el.canvas.addEventListener('pointermove', function (event) {
-      if (!activeStroke || !canDraw()) return;
-      event.preventDefault();
-      activeStroke.points.push(canvasPoint(event));
-      repaint();
-    });
-
-    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (type) {
-      el.canvas.addEventListener(type, function () { activeStroke = null; });
-    });
-
-    window.addEventListener('resize', function () {
-      if (state.phase === 'draw') sizeCanvas();
-    });
   }
 
   /* ---------------- Uhr ---------------- */
@@ -235,6 +159,7 @@
 
   function startTimer() {
     stopTimer();
+    if (sketch) sketch.lock(false);
     el.canvas.classList.remove('is-locked');
 
     if (!state.time) {
@@ -258,6 +183,7 @@
 
       if (left <= 0) {
         stopTimer();
+        if (sketch) sketch.lock(true);
         el.canvas.classList.add('is-locked');
         el.timerText.textContent = 'Zeit um!';
         el.timerText.classList.add('is-over');
@@ -289,7 +215,7 @@
   function startRound() {
     state.word = pickWord();
     state.swapped = false;
-    strokes = [];
+    if (sketch) sketch.clear();
     showCurtain('word', drawerName() + ' zeichnet', 'Nur ' + drawerName() + ' darf jetzt schauen.');
   }
 
@@ -328,8 +254,8 @@
       el.colors.appendChild(item);
     });
 
-    el.undo.disabled = strokes.length === 0;
-    el.clear.disabled = strokes.length === 0;
+    el.undo.disabled = !sketch || sketch.isEmpty();
+    el.clear.disabled = !sketch || sketch.isEmpty();
   }
 
   function renderGuessers() {
@@ -417,8 +343,8 @@
     if (phase === 'draw') {
       el.drawerName.textContent = drawerName() + ' zeichnet';
       el.roundNumber.textContent = String(state.round);
+      if (sketch) sketch.resize();
       renderTools();
-      sizeCanvas();
     } else {
       stopTimer();
     }
@@ -497,7 +423,7 @@
     stopTimer();
     state.phase = 'setup';
     state.curtain = null;
-    strokes = [];
+    if (sketch) sketch.clear();
     roster.set(state.players.length
       ? state.players.map(function (p) { return p.name; })
       : ['', '', '']);
@@ -522,7 +448,7 @@
 
     el.startDraw.addEventListener('click', function () {
       state.phase = 'draw';
-      strokes = [];
+      if (sketch) sketch.clear();
       save();
       render();
       startTimer();
@@ -534,20 +460,12 @@
       var button = event.target.closest ? event.target.closest('.mr-color') : null;
       if (!button) return;
       colorId = button.dataset.color;
+      sketch.setColor(colorHex());
       renderTools();
     });
 
-    el.undo.addEventListener('click', function () {
-      strokes.pop();
-      repaint();
-      renderTools();
-    });
-
-    el.clear.addEventListener('click', function () {
-      strokes = [];
-      repaint();
-      renderTools();
-    });
+    el.undo.addEventListener('click', function () { sketch.undo(); });
+    el.clear.addEventListener('click', function () { sketch.clear(); });
 
     el.guessed.addEventListener('click', function () {
       stopTimer();
@@ -655,10 +573,15 @@
       el.storageHint.textContent = 'Hinweis: Dieser Browser erlaubt keinen lokalen Speicher – Namen und Punkte gehen beim Schließen verloren.';
     }
 
+    sketch = TG.sketch.create(el.canvas, {
+      color: colorHex(),
+      width: 5,
+      onChange: function () { if (state.phase === 'draw') renderTools(); }
+    });
+
     save();
     render();
     bindEvents();
-    bindCanvas();
     if (state.phase === 'draw') startTimer();
     TG.registerServiceWorker('../../sw.js');
   }

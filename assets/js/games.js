@@ -37,6 +37,14 @@
       status: 'ready'
     },
     {
+      id: 'kritzelbild',
+      name: 'Kritzelbild',
+      emoji: '✏️',
+      description: 'Aus einer zufälligen Form ein Bild machen',
+      href: 'games/kritzelbild/',
+      status: 'ready'
+    },
+    {
       id: 'malen-und-raten',
       name: 'Malen und Raten',
       emoji: '🎨',

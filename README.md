@@ -17,6 +17,8 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
 - **Kniffel** – der Würfelklassiker für zwei bis sechs, alle auf einem Gerät.
   Das Blatt zeigt für jeden Wurf, was welches Feld bringen würde.
 - **Malen und Raten** – eine Person zeichnet mit dem Finger, die anderen rufen.
+- **Kritzelbild** – aus einer zufälligen Startform ein Bild machen. Alle bekommen
+  dieselbe Form, danach vergleicht man. Geht auch allein.
 - **Galgenmännchen** – Buchstaben raten, bevor die Rakete ohne dich startet.
   Allein gegen ein Zufallswort oder zu zweit mit selbst gedachtem Wort.
 - **Käsekästchen** – Linien ziehen, Kästchen schließen, zu zweit auf einem Handy.
@@ -109,6 +111,8 @@ assets/
   js/qr.js                  QR-Encoder (Byte-Modus, Level L/M, Version 1–10)
   js/words.js               188 zeichenbare Hauptwörter in drei Stufen,
                             geteilt von Malen und Raten und Galgenmännchen
+  js/sketch.js              Zeichenfläche: Striche in Bruchteilen der
+                            Kantenlänge, dadurch in jeder Größe darstellbar
   img/                      Icons (Favicon, PWA, Apple Touch)
 games/
   auto-bingo/
@@ -150,6 +154,10 @@ games/
     index.html, game.css, game.js
                             Symbolwürfel und Satzanfänge
     symbols.js              59 bewusst mehrdeutige Symbole
+  kritzelbild/
+    index.html, game.css, game.js
+                            Zeichenfläche mit Vorgabe und Galerie
+    shapes.js               Zufallsformen aus einem Startwert (getrennt testbar)
 ```
 
 ## Ein neues Spiel ergänzen
