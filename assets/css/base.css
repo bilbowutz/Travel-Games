@@ -295,17 +295,6 @@ a.game-card:active { transform: scale(.975); box-shadow: var(--shadow-md); }
   letter-spacing: .02em;
 }
 
-.game-card--soon {
-  opacity: .62;
-  border-style: dashed;
-  box-shadow: none;
-}
-
-.game-card--soon .game-card__badge {
-  background: var(--surface-2);
-  color: var(--text-muted);
-}
-
 /* ---------- Infobox & Fußzeile ---------- */
 
 .note {

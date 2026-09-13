@@ -1,0 +1,275 @@
+/* Schiffe versenken – spielspezifische Styles */
+
+:root {
+  --sea: #dbeafe;
+  --sea-line: #bfdbfe;
+  --ship: #475569;
+  --ship-ink: #ffffff;
+  --hit: #dc2626;
+  --sunk: #7f1d1d;
+  --miss: #93a8c4;
+}
+
+[data-theme="dark"] {
+  --sea: #16304d;
+  --sea-line: #1e3f66;
+  --ship: #94a3b8;
+  --ship-ink: #0d1117;
+  --hit: #ef4444;
+  --sunk: #b91c1c;
+  --miss: #5b7392;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --sea: #16304d;
+    --sea-line: #1e3f66;
+    --ship: #94a3b8;
+    --ship-ink: #0d1117;
+    --hit: #ef4444;
+    --sunk: #b91c1c;
+    --miss: #5b7392;
+  }
+}
+
+.status { margin-top: -18px; }
+#turn-name, #place-title { font-size: 17px; overflow-wrap: anywhere; }
+
+.place-left,
+.place-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.place-hint { margin: 14px 0 10px; }
+
+/* ---------- Spielraster ---------- */
+
+.grid-wrap {
+  margin: 18px auto 0;
+  max-width: 440px;
+}
+
+.sea-grid {
+  display: grid;
+  grid-template-columns: 1.4em repeat(10, minmax(0, 1fr));
+  gap: 2px;
+  container-type: inline-size;
+  font-size: 13px;
+}
+
+.sea-label {
+  display: grid;
+  place-items: center;
+  font-size: clamp(8px, 2.4cqw, 12px);
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.sea-cell {
+  aspect-ratio: 1;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: var(--sea);
+  box-shadow: 0 0 0 1px var(--sea-line) inset;
+  display: grid;
+  place-items: center;
+  font-size: clamp(9px, 3.4cqw, 17px);
+  line-height: 1;
+  color: transparent;
+  transition: transform .1s ease, background .15s ease;
+}
+
+button.sea-cell:active { transform: scale(.88); }
+
+.sea-cell.is-ship {
+  background: var(--ship);
+  box-shadow: none;
+}
+
+.sea-cell.is-miss {
+  color: var(--miss);
+}
+
+.sea-cell.is-miss::after {
+  content: "";
+  width: 26%;
+  height: 26%;
+  border-radius: 50%;
+  background: var(--miss);
+}
+
+.sea-cell.is-hit {
+  background: var(--hit);
+  box-shadow: none;
+  color: #fff;
+}
+
+.sea-cell.is-hit::after { content: "✕"; font-weight: 800; }
+
+.sea-cell.is-sunk {
+  background: var(--sunk);
+  color: #fff;
+}
+
+.sea-cell.is-selectable { cursor: pointer; }
+
+.sea-cell:disabled { cursor: default; }
+
+.sea-grid--small .sea-cell { border-radius: 2px; }
+
+/* ---------- Schiffsauswahl beim Aufstellen ---------- */
+
+.ship-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ship-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--tap);
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  transition: transform .12s ease, border-color .15s ease, background .15s ease;
+}
+
+.ship-chip:active { transform: scale(.95); }
+
+.ship-chip[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.ship-chip__pips {
+  display: flex;
+  gap: 2px;
+}
+
+.ship-chip__pips i {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: .7;
+}
+
+/* ---------- Flottenstand ---------- */
+
+.game-main.no-actionbar { padding-bottom: 28px; }
+
+.fleet-status__title {
+  margin: 16px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.fleet-status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fleet-status li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.fleet-status li.is-sunk {
+  border-color: var(--hit);
+  background: var(--found-soft);
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.fleet-status li.is-unknown { color: var(--text-muted); }
+
+/* ---------- Sichtschutz ---------- */
+
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--bg-hero);
+  color: #fff;
+  text-align: center;
+}
+
+.curtain[hidden] { display: none !important; }
+
+.curtain__inner {
+  width: min(100%, 360px);
+  animation: curtain-in .22s ease both;
+}
+
+@keyframes curtain-in { from { opacity: 0; transform: translateY(10px); } }
+
+.curtain__icon { font-size: 52px; margin: 0 0 10px; }
+
+.curtain__title {
+  font-size: clamp(23px, 7vw, 30px);
+  overflow-wrap: anywhere;
+}
+
+.curtain__note {
+  margin: 12px 0 28px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, .85);
+}
+
+.curtain .btn--primary {
+  background: #fff;
+  color: #1e3fae;
+  border-color: transparent;
+}
+
+/* ---------- Schlussbild ---------- */
+
+.final-boards {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.final-boards__title {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+#view-picker { margin-top: 16px; }

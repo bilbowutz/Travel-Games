@@ -23,6 +23,15 @@
       status: 'ready'
     },
     {
+      id: 'schiffe-versenken',
+      name: 'Schiffe versenken',
+      emoji: '⚓',
+      description: 'Zu zweit auf einem Handy – abwechselnd, mit Sichtschutz dazwischen.',
+      href: 'games/schiffe-versenken/',
+      badge: 'Spielen',
+      status: 'ready'
+    },
+    {
       id: 'farben-rennen',
       name: 'Farben-Rennen',
       emoji: '🎨',
@@ -30,22 +39,6 @@
       href: 'games/farben-rennen/',
       badge: 'Spielen',
       status: 'ready'
-    },
-    {
-      id: 'kennzeichen-jagd',
-      name: 'Kennzeichen-Jagd',
-      emoji: '🔠',
-      description: 'Sammle Städtekürzel von Nummernschildern.',
-      badge: 'Bald',
-      status: 'soon'
-    },
-    {
-      id: 'koffer-packen',
-      name: 'Ich packe meinen Koffer',
-      emoji: '🧳',
-      description: 'Der Merk-Klassiker, mit Liste zum Mitlesen.',
-      badge: 'Bald',
-      status: 'soon'
     }
   ];
 })(window);

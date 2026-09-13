@@ -61,15 +61,10 @@
 
   TG.games.forEach(function (game) {
     var li = document.createElement('li');
-    var ready = game.status === 'ready';
-    var card = document.createElement(ready ? 'a' : 'div');
+    var card = document.createElement('a');
 
-    card.className = 'game-card' + (ready ? '' : ' game-card--soon');
-    if (ready) {
-      card.href = game.href;
-    } else {
-      card.setAttribute('aria-disabled', 'true');
-    }
+    card.className = 'game-card';
+    card.href = game.href;
 
     card.innerHTML =
       '<span class="game-card__emoji" aria-hidden="true"></span>' +

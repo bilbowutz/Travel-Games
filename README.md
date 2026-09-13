@@ -11,6 +11,9 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
   die Mehrheit bekommt den Punkt.
 - **Farben-Rennen** – jede:r bekommt eine Autofarbe zugelost und tippt mit,
   wer zuerst das Ziel erreicht, gewinnt die Runde.
+- **Schiffe versenken** – zu zweit auf einem Handy, abwechselnd. Zwischen den
+  Zügen schiebt sich ein Sichtschutz davor, damit niemand die gegnerische
+  Flotte sieht.
 
 ## Features
 
@@ -110,6 +113,11 @@ games/
     game.css                Farbkacheln, Punktestand
     game.js                 Spiellogik, Zähler, Rückgängig, Code, Speichern
     colors.js               Autofarben mit passender Schriftfarbe
+  schiffe-versenken/
+    index.html              Spielseite
+    game.css                Spielraster, Sichtschutz
+    game.js                 Phasen, Aufstellen, Schießen, Speichern
+    rules.js                Regelwerk ohne Oberfläche (getrennt testbar)
 ```
 
 ## Ein neues Spiel ergänzen
@@ -124,9 +132,6 @@ games/
 Für Spiele mit Mitspielerliste gibt es `TG.nameEditor(listenElement, optionen)` –
 das baut die Namensfelder samt Hinzufügen und Entfernen und liefert mit
 `.values()` die getrimmten Namen zurück.
-
-Auf der Startseite sind zwei weitere Spiele als „Bald" vorgemerkt:
-Kennzeichen-Jagd und „Ich packe meinen Koffer".
 
 ## Inhalte anpassen
 
@@ -147,3 +152,8 @@ Beim Ergänzen die `version` hochzählen.
 
 **Autofarben** stehen in `games/farben-rennen/colors.js`. `ink` sagt, ob auf der
 Fläche helle oder dunkle Schrift lesbar ist – bei neuen Farben mitpflegen.
+
+**Schiffe-versenken-Regeln** stehen in `games/schiffe-versenken/rules.js`,
+bewusst getrennt von der Oberfläche. Dort liegen Flotte, Brettgröße und die
+beiden Hausregeln: Schiffe dürfen sich nicht berühren, und nach einem Treffer
+ist man nochmal dran.
