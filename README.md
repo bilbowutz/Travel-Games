@@ -9,6 +9,8 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
   Hund, Traktor …). Eine volle Reihe, Spalte oder Diagonale = Bingo.
 - **Wer würde eher …?** – 124 Fragen, alle zeigen gleichzeitig auf eine Person,
   die Mehrheit bekommt den Punkt.
+- **Farben-Rennen** – jede:r bekommt eine Autofarbe zugelost und tippt mit,
+  wer zuerst das Ziel erreicht, gewinnt die Runde.
 
 ## Features
 
@@ -88,6 +90,7 @@ assets/
   js/app.js                 Speicher, Farbschema, Toasts, Haptik,
                             Seed-Zufall, Codes, Teilen
   js/games.js               Katalog aller Spiele (Quelle der Startseiten-Kacheln)
+  js/nameEditor             (in app.js) Namensliste, von mehreren Spielen genutzt
   js/confetti.js            Konfetti auf Canvas
   js/qr.js                  QR-Encoder (Byte-Modus, Level L/M, Version 1–10)
   img/                      Icons (Favicon, PWA, Apple Touch)
@@ -102,6 +105,11 @@ games/
     game.css                Fragekarte, Namensbuttons, Punktestand
     game.js                 Spiellogik, Punkte, Code, Speichern
     questions.js            Fragendeck (124 Fragen)
+  farben-rennen/
+    index.html              Spielseite
+    game.css                Farbkacheln, Punktestand
+    game.js                 Spiellogik, Zähler, Rückgängig, Code, Speichern
+    colors.js               Autofarben mit passender Schriftfarbe
 ```
 
 ## Ein neues Spiel ergänzen
@@ -113,8 +121,12 @@ games/
 3. Die neuen Dateien in die `PRECACHE`-Liste in `sw.js` aufnehmen und
    die `CACHE`-Version hochzählen, damit die Offline-Kopie aktualisiert wird.
 
-Auf der Startseite sind drei weitere Spiele als „Bald" vorgemerkt:
-Kennzeichen-Jagd, Farben-Rennen und „Ich packe meinen Koffer".
+Für Spiele mit Mitspielerliste gibt es `TG.nameEditor(listenElement, optionen)` –
+das baut die Namensfelder samt Hinzufügen und Entfernen und liefert mit
+`.values()` die getrimmten Namen zurück.
+
+Auf der Startseite sind zwei weitere Spiele als „Bald" vorgemerkt:
+Kennzeichen-Jagd und „Ich packe meinen Koffer".
 
 ## Inhalte anpassen
 
@@ -132,3 +144,6 @@ Kennzeichen-Jagd, Farben-Rennen und „Ich packe meinen Koffer".
 **Fragen** stehen in `games/wer-wuerde-eher/questions.js`, jeweils ohne den
 Anfang „Wer würde eher" und ohne Fragezeichen – beides setzt das Spiel selbst.
 Beim Ergänzen die `version` hochzählen.
+
+**Autofarben** stehen in `games/farben-rennen/colors.js`. `ink` sagt, ob auf der
+Fläche helle oder dunkle Schrift lesbar ist – bei neuen Farben mitpflegen.

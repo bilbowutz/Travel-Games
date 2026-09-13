@@ -124,6 +124,13 @@ button {
 
 .btn:active { transform: scale(.96); }
 
+.btn:disabled {
+  opacity: .45;
+  cursor: default;
+}
+
+.btn:disabled:active { transform: none; }
+
 .btn--primary {
   background: var(--accent);
   border-color: transparent;
@@ -584,6 +591,68 @@ a.game-card:active { transform: scale(.975); box-shadow: var(--shadow-md); }
 .confirm::backdrop { background: rgba(8, 12, 22, .55); }
 .confirm p { margin-top: 8px; color: var(--text-muted); font-size: 14.5px; }
 .confirm .sheet__actions { margin-top: 20px; }
+
+/* ---------- Einstiegs-Panel ---------- */
+
+.panel {
+  margin-top: -18px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.panel h2 { font-size: 20px; }
+
+.panel__hint {
+  margin: 8px 0 18px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* ---------- Namensliste ---------- */
+
+.name-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.name-row__number {
+  width: 22px;
+  flex: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.name-row__remove {
+  flex: none;
+  width: var(--tap);
+  height: var(--tap);
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 19px;
+  line-height: 1;
+  transition: background .15s ease, color .15s ease;
+}
+
+.name-row__remove:hover { color: var(--text); }
+.name-row__remove[hidden] { display: none; }
 
 /* ---------- Code teilen ---------- */
 

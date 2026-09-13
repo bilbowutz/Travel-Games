@@ -1,6 +1,6 @@
 /* Offline-Cache für Travel Games.
    CACHE hochzählen, wenn sich Dateien geändert haben. */
-const CACHE = 'travel-games-v3';
+const CACHE = 'travel-games-v4';
 
 const PRECACHE = [
   './',
@@ -24,7 +24,12 @@ const PRECACHE = [
   './games/wer-wuerde-eher/index.html',
   './games/wer-wuerde-eher/game.css',
   './games/wer-wuerde-eher/game.js',
-  './games/wer-wuerde-eher/questions.js'
+  './games/wer-wuerde-eher/questions.js',
+  './games/farben-rennen/',
+  './games/farben-rennen/index.html',
+  './games/farben-rennen/game.css',
+  './games/farben-rennen/game.js',
+  './games/farben-rennen/colors.js'
 ];
 
 self.addEventListener('install', (event) => {

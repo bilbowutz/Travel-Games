@@ -23,18 +23,19 @@
       status: 'ready'
     },
     {
+      id: 'farben-rennen',
+      name: 'Farben-Rennen',
+      emoji: '🎨',
+      description: 'Jede:r bekommt eine Autofarbe – wer zuerst am Ziel ist, gewinnt.',
+      href: 'games/farben-rennen/',
+      badge: 'Spielen',
+      status: 'ready'
+    },
+    {
       id: 'kennzeichen-jagd',
       name: 'Kennzeichen-Jagd',
       emoji: '🔠',
       description: 'Sammle Städtekürzel von Nummernschildern.',
-      badge: 'Bald',
-      status: 'soon'
-    },
-    {
-      id: 'farben-rennen',
-      name: 'Farben-Rennen',
-      emoji: '🎨',
-      description: 'Jede:r bekommt eine Autofarbe – wer zählt am meisten?',
       badge: 'Bald',
       status: 'soon'
     },

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Farben-Rennen – Travel Games</title>
+<meta name="description" content="Farben-Rennen fürs Handy: Jede:r bekommt eine Autofarbe und zählt mit. Wer zuerst am Ziel ist, gewinnt. Offline spielbar.">
+<meta name="theme-color" content="#2f6bff">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Farben-Rennen">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="game.css">
+<script>
+  try {
+    var m = JSON.parse(localStorage.getItem('travelgames.theme'));
+    if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-theme', m);
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__bar">
+      <a class="back-link" href="../../">‹ Spiele</a>
+      <span class="spacer"></span>
+      <button type="button" class="icon-btn" id="theme-toggle">🌗</button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen">⚙️</button>
+    </div>
+    <h1 class="hero__title">Farben-Rennen 🎨</h1>
+    <p class="hero__sub">Jede:r bekommt eine Autofarbe. Wer sie sieht, tippt – wer zuerst am Ziel ist, gewinnt.</p>
+  </div>
+</header>
+
+<main class="wrap game-main">
+
+  <!-- Namen eintragen -->
+  <section id="setup">
+    <div class="panel">
+      <h2>Wer fährt mit?</h2>
+      <p class="panel__hint">Mindestens zwei Namen. Die Farben werden danach zufällig verteilt – das spart die Diskussion.</p>
+      <ul class="name-list" id="name-list"></ul>
+      <button type="button" class="btn btn--block" id="add-player">＋ Mitspieler:in</button>
+    </div>
+  </section>
+
+  <!-- Spiel -->
+  <section id="play" hidden>
+    <div class="status" aria-label="Spielstand">
+      <p class="status__count" id="target-label">Ziel 10</p>
+      <div class="status__bar" role="progressbar" aria-label="Fortschritt der Führenden" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="race-progress">
+        <div class="status__fill" id="race-fill"></div>
+      </div>
+      <p class="status__bingos" id="leader-chip" hidden>🏁 <span id="leader-name">–</span></p>
+    </div>
+
+    <ul class="color-grid" id="color-grid"></ul>
+
+    <p class="play-hint" id="play-hint">Tippt auf eure Farbe, sobald ihr so ein Auto seht.</p>
+  </section>
+
+  <details class="rules">
+    <summary>So wird gespielt</summary>
+    <ul>
+      <li>Jede:r bekommt eine Autofarbe zugelost.</li>
+      <li>Wer ein Auto in seiner Farbe sieht, tippt auf die eigene Kachel.</li>
+      <li>Nur entgegenkommende Autos zählen – sonst wird’s zu einfach.</li>
+      <li>Wer zuerst das Ziel erreicht, gewinnt die Runde.</li>
+      <li>Verzählt? „Rückgängig“ nimmt den letzten Tipp zurück.</li>
+      <li>Mit dem Code aus den Einstellungen spielt ein zweites Auto dieselbe Verteilung.</li>
+    </ul>
+  </details>
+
+</main>
+
+<div class="actionbar">
+  <div class="actionbar__inner" id="setup-actions">
+    <button type="button" class="btn btn--primary" id="start-game">Farben verteilen</button>
+  </div>
+  <div class="actionbar__inner" id="play-actions" hidden>
+    <button type="button" class="btn" id="undo">↩ Rückgängig</button>
+    <button type="button" class="btn btn--primary" id="open-scores">🏆 Stand</button>
+  </div>
+</div>
+
+<!-- Punktestand -->
+<dialog class="sheet" id="scores">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2 id="scores-title">Zwischenstand</h2>
+    <ol class="score-list" id="score-list"></ol>
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--primary" id="close-scores">Weiterspielen</button>
+      <button type="button" class="btn btn--block" id="share-scores">🔗 Stand teilen</button>
+      <button type="button" class="btn btn--block btn--ghost" id="new-round">Neue Runde</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Einstellungen -->
+<dialog class="sheet" id="settings">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2>Einstellungen</h2>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="target-heading">Ziel</span>
+      <div class="segmented" role="group" aria-labelledby="target-heading" id="target-picker">
+        <button type="button" data-target="5">5</button>
+        <button type="button" data-target="10">10</button>
+        <button type="button" data-target="20">20</button>
+        <button type="button" data-target="0">ohne</button>
+      </div>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label">Gemeinsam spielen</span>
+      <p class="code-display" id="game-code">–</p>
+      <p class="code-hint">Gleicher Code = gleiche Farbverteilung und dasselbe Ziel. Gezählt wird auf jedem Handy selbst.</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--block" id="share-game">🔗 Rennen teilen</button>
+        <button type="button" class="btn btn--block" id="show-qr">📷 QR-Code zeigen</button>
+      </div>
+      <form class="code-form" id="code-form">
+        <label class="visually-hidden" for="code-input">Code eingeben</label>
+        <input class="text-input code-input" id="code-input" type="text" maxlength="8"
+               placeholder="Code, z. B. K7M-2XQ" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        <button type="submit" class="btn">Laden</button>
+      </form>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label">Mitspieler:innen</span>
+      <p class="code-hint" id="player-summary">–</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--block" id="redeal">🔀 Farben neu verteilen</button>
+        <button type="button" class="btn btn--block" id="edit-players">Namen bearbeiten</button>
+        <button type="button" class="btn btn--block btn--danger" id="reset-all">Zähler und Siege löschen</button>
+      </div>
+    </div>
+
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--primary" id="close-settings">Fertig</button>
+    </div>
+
+    <p class="sheet__hint" id="storage-hint">Alles wird nur lokal auf diesem Gerät gespeichert.</p>
+  </div>
+</dialog>
+
+<!-- Bestätigung -->
+<dialog class="confirm" id="confirm">
+  <h2 id="confirm-title">Sicher?</h2>
+  <p id="confirm-text"></p>
+  <div class="sheet__actions">
+    <button type="button" class="btn btn--block btn--primary" id="confirm-ok">Ja</button>
+    <button type="button" class="btn btn--block btn--ghost" id="confirm-cancel">Abbrechen</button>
+  </div>
+</dialog>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="toast-host" role="status" aria-live="polite"></div>
+
+<script src="../../assets/js/app.js"></script>
+<script src="../../assets/js/qr.js"></script>
+<script src="../../assets/js/confetti.js"></script>
+<script src="colors.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

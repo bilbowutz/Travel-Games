@@ -262,6 +262,102 @@
     else if (result === 'failed') TG.toast('Teilen hat nicht geklappt');
   };
 
+  /* ---------- Namensliste (von mehreren Spielen genutzt) ---------- */
+
+  /* Baut eine Liste aus Namensfeldern in das übergebene Listenelement.
+     options: { min, max, maxLength, addButton, onChange } */
+  TG.nameEditor = function (list, options) {
+    options = options || {};
+    var min = options.min || 2;
+    var max = options.max || 10;
+    var maxLength = options.maxLength || 16;
+    var names = [];
+
+    function read() {
+      return Array.prototype.map.call(list.querySelectorAll('input'), function (input) {
+        return input.value;
+      });
+    }
+
+    function update() {
+      if (options.addButton) options.addButton.hidden = read().length >= max;
+      if (options.onChange) options.onChange();
+    }
+
+    function draw(focusLast) {
+      list.textContent = '';
+
+      names.forEach(function (name, index) {
+        var row = document.createElement('li');
+        row.className = 'name-row';
+
+        var number = document.createElement('span');
+        number.className = 'name-row__number';
+        number.setAttribute('aria-hidden', 'true');
+        number.textContent = (index + 1) + '.';
+
+        var input = document.createElement('input');
+        input.className = 'text-input';
+        input.type = 'text';
+        input.value = name;
+        input.maxLength = maxLength;
+        input.placeholder = 'Name';
+        input.autocomplete = 'off';
+        input.setAttribute('aria-label', 'Name ' + (index + 1));
+
+        var remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'name-row__remove';
+        remove.textContent = '✕';
+        remove.setAttribute('aria-label', 'Name ' + (index + 1) + ' entfernen');
+        remove.hidden = names.length <= min;
+        remove.addEventListener('click', function () {
+          names = read();
+          names.splice(index, 1);
+          draw(false);
+        });
+
+        row.appendChild(number);
+        row.appendChild(input);
+        row.appendChild(remove);
+        list.appendChild(row);
+      });
+
+      if (focusLast) {
+        var inputs = list.querySelectorAll('input');
+        if (inputs.length) inputs[inputs.length - 1].focus();
+      }
+
+      update();
+    }
+
+    function add() {
+      names = read();
+      if (names.length >= max) return false;
+      names.push('');
+      draw(true);
+      return true;
+    }
+
+    if (options.addButton) options.addButton.addEventListener('click', add);
+
+    return {
+      /* Entwurf setzen; zu kurze Listen werden auf das Minimum aufgefüllt. */
+      set: function (values) {
+        names = (values || []).slice(0, max);
+        while (names.length < min) names.push('');
+        draw(false);
+      },
+      add: add,
+      /* Getrimmte, nicht leere Namen. */
+      values: function () {
+        return read()
+          .map(function (name) { return name.trim().slice(0, maxLength); })
+          .filter(function (name) { return name.length > 0; });
+      }
+    };
+  };
+
   /* Zeigt einen Link als QR-Code. Der Dialog wird beim ersten Aufruf gebaut,
      die Spielseiten brauchen dafür kein eigenes Markup. */
   TG.showQrDialog = function (url, options) {

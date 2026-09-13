@@ -58,8 +58,14 @@
   };
 
   var state = null;
-  var draftNames = [];
   var editing = false;
+
+  var roster = TG.nameEditor(el.nameList, {
+    min: MIN_PLAYERS,
+    max: MAX_PLAYERS,
+    maxLength: MAX_NAME,
+    addButton: el.addPlayer
+  });
 
   /* ---------------- Zustand ---------------- */
 
@@ -109,74 +115,16 @@
 
   /* ---------------- Namen eintragen ---------------- */
 
-  function readDraft() {
-    return Array.prototype.map.call(
-      el.nameList.querySelectorAll('input'),
-      function (input) { return input.value; }
-    );
-  }
-
-  function renderSetup(focusLast) {
-    el.nameList.textContent = '';
-
-    draftNames.forEach(function (name, index) {
-      var row = document.createElement('li');
-      row.className = 'name-row';
-
-      var number = document.createElement('span');
-      number.className = 'name-row__number';
-      number.setAttribute('aria-hidden', 'true');
-      number.textContent = (index + 1) + '.';
-
-      var input = document.createElement('input');
-      input.className = 'text-input';
-      input.type = 'text';
-      input.value = name;
-      input.maxLength = MAX_NAME;
-      input.placeholder = 'Name';
-      input.autocomplete = 'off';
-      input.setAttribute('aria-label', 'Name ' + (index + 1));
-
-      var remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'name-row__remove';
-      remove.textContent = '✕';
-      remove.setAttribute('aria-label', 'Name ' + (index + 1) + ' entfernen');
-      remove.hidden = draftNames.length <= MIN_PLAYERS;
-      remove.addEventListener('click', function () {
-        draftNames = readDraft();
-        draftNames.splice(index, 1);
-        renderSetup(false);
-      });
-
-      row.appendChild(number);
-      row.appendChild(input);
-      row.appendChild(remove);
-      el.nameList.appendChild(row);
-    });
-
-    el.addPlayer.hidden = draftNames.length >= MAX_PLAYERS;
-
-    if (focusLast) {
-      var inputs = el.nameList.querySelectorAll('input');
-      if (inputs.length) inputs[inputs.length - 1].focus();
-    }
-  }
-
   function showSetup() {
     editing = true;
-    draftNames = state.players.length
+    roster.set(state.players.length
       ? state.players.map(function (p) { return p.name; })
-      : ['', '', ''];
-    while (draftNames.length < MIN_PLAYERS) draftNames.push('');
-    renderSetup(false);
+      : ['', '', '']);
     render();
   }
 
   function startFromDraft() {
-    var names = readDraft()
-      .map(function (name) { return name.trim().slice(0, MAX_NAME); })
-      .filter(function (name) { return name.length > 0; });
+    var names = roster.values();
 
     if (names.length < MIN_PLAYERS) {
       TG.toast('Bitte mindestens zwei Namen eintragen');
@@ -421,13 +369,6 @@
   /* ---------------- Verdrahtung ---------------- */
 
   function bindEvents() {
-    el.addPlayer.addEventListener('click', function () {
-      draftNames = readDraft();
-      if (draftNames.length >= MAX_PLAYERS) return;
-      draftNames.push('');
-      renderSetup(true);
-    });
-
     el.startGame.addEventListener('click', startFromDraft);
 
     el.nameList.addEventListener('keydown', function (event) {
