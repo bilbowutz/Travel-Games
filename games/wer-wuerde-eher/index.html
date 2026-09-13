@@ -72,7 +72,8 @@
       <li>Bei „drei, zwei, eins“ zeigen alle gleichzeitig auf jemanden.</li>
       <li>Wer die meisten Finger abbekommt, tippt sich selbst an und bekommt den Punkt.</li>
       <li>Unentschieden? Einfach überspringen – oder beiden einen Punkt geben.</li>
-      <li>Mit dem Code aus den Einstellungen bekommen alle Handys dieselben Fragen.</li>
+      <li>Mit dem Code aus den Einstellungen bekommen alle Handys dieselben Fragen –
+          per Link, eingetipptem Code oder QR-Code zum Abscannen.</li>
     </ul>
   </details>
 
@@ -114,6 +115,7 @@
       <p class="code-hint">Gleicher Code = gleiche Fragen in gleicher Reihenfolge. Punkte zählt jedes Handy für sich.</p>
       <div class="sheet__actions">
         <button type="button" class="btn btn--block" id="share-game">🔗 Fragenrunde teilen</button>
+        <button type="button" class="btn btn--block" id="show-qr">📷 QR-Code zeigen</button>
       </div>
       <form class="code-form" id="code-form">
         <label class="visually-hidden" for="code-input">Code eingeben</label>
@@ -154,6 +156,7 @@
 <div class="toast-host" role="status" aria-live="polite"></div>
 
 <script src="../../assets/js/app.js"></script>
+<script src="../../assets/js/qr.js"></script>
 <script src="questions.js"></script>
 <script src="../../assets/js/confetti.js"></script>
 <script src="game.js"></script>

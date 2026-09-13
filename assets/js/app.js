@@ -262,6 +262,58 @@
     else if (result === 'failed') TG.toast('Teilen hat nicht geklappt');
   };
 
+  /* Zeigt einen Link als QR-Code. Der Dialog wird beim ersten Aufruf gebaut,
+     die Spielseiten brauchen dafür kein eigenes Markup. */
+  TG.showQrDialog = function (url, options) {
+    options = options || {};
+
+    if (!TG.qr) {
+      TG.toast('QR-Codes sind auf dieser Seite nicht verfügbar');
+      return;
+    }
+
+    var svg;
+    try {
+      svg = TG.qr.toSvg(TG.qr.encode(url), { quiet: 2 });
+    } catch (error) {
+      TG.toast('Der Link ist zu lang für einen QR-Code');
+      return;
+    }
+
+    var dialog = document.getElementById('tg-qr');
+
+    if (!dialog) {
+      dialog = document.createElement('dialog');
+      dialog.className = 'qr-dialog';
+      dialog.id = 'tg-qr';
+      dialog.innerHTML =
+        '<h2 class="qr-dialog__title"></h2>' +
+        '<div class="qr-dialog__image"></div>' +
+        '<p class="qr-dialog__caption"></p>' +
+        '<p class="qr-dialog__url"></p>' +
+        '<button type="button" class="btn btn--block btn--primary">Schließen</button>';
+      document.body.appendChild(dialog);
+
+      dialog.querySelector('button').addEventListener('click', function () {
+        if (typeof dialog.close === 'function') dialog.close();
+        else dialog.removeAttribute('open');
+      });
+      dialog.addEventListener('click', function (event) {
+        if (event.target !== dialog) return;
+        if (typeof dialog.close === 'function') dialog.close();
+        else dialog.removeAttribute('open');
+      });
+    }
+
+    dialog.querySelector('.qr-dialog__title').textContent = options.title || 'Zum Mitspielen scannen';
+    dialog.querySelector('.qr-dialog__image').innerHTML = svg;
+    dialog.querySelector('.qr-dialog__caption').textContent = options.caption || '';
+    dialog.querySelector('.qr-dialog__url').textContent = url.replace(/^https?:\/\//, '');
+
+    if (typeof dialog.showModal === 'function') dialog.showModal();
+    else dialog.setAttribute('open', '');
+  };
+
   /* Adresse dieser Seite ohne #-Anhang. */
   TG.pageUrl = function () {
     return location.href.split('#')[0];

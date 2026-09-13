@@ -1,6 +1,6 @@
 /* Offline-Cache für Travel Games.
    CACHE hochzählen, wenn sich Dateien geändert haben. */
-const CACHE = 'travel-games-v2';
+const CACHE = 'travel-games-v3';
 
 const PRECACHE = [
   './',
@@ -10,6 +10,7 @@ const PRECACHE = [
   './assets/js/app.js',
   './assets/js/games.js',
   './assets/js/confetti.js',
+  './assets/js/qr.js',
   './assets/img/favicon.svg',
   './assets/img/icon-192.png',
   './assets/img/icon-512.png',

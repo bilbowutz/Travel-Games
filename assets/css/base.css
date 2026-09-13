@@ -645,6 +645,54 @@ a.game-card:active { transform: scale(.975); box-shadow: var(--shadow-md); }
   text-transform: none;
 }
 
+/* ---------- QR-Code ---------- */
+
+.qr-dialog {
+  width: min(340px, calc(100vw - 40px));
+  margin: auto;
+  padding: 22px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+
+.qr-dialog::backdrop { background: rgba(8, 12, 22, .62); }
+
+.qr-dialog__title { font-size: 19px; }
+
+/* Bleibt bewusst immer hell – dunkle QR-Codes scannen deutlich schlechter. */
+.qr-dialog__image {
+  margin: 16px auto 0;
+  padding: 10px;
+  width: min(100%, 288px);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(8, 12, 22, .08);
+}
+
+.qr-dialog__image svg { display: block; width: 100%; height: auto; }
+
+.qr-dialog__caption {
+  margin: 14px 0 0;
+  font-family: ui-monospace, "SF Mono", "Roboto Mono", Menlo, monospace;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+
+.qr-dialog__caption:empty { display: none; }
+
+.qr-dialog__url {
+  margin: 6px 0 18px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
 /* ---------- Konfetti ---------- */
 
 #confetti {

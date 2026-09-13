@@ -43,6 +43,7 @@
     closeSettings: document.getElementById('close-settings'),
     gameCode: document.getElementById('game-code'),
     shareGame: document.getElementById('share-game'),
+    showQr: document.getElementById('show-qr'),
     codeForm: document.getElementById('code-form'),
     codeInput: document.getElementById('code-input'),
     playerSummary: document.getElementById('player-summary'),
@@ -482,6 +483,13 @@
         url: gameUrl()
       }).then(function (result) {
         TG.reportShare(result, 'Link kopiert – jetzt einfügen und verschicken');
+      });
+    });
+
+    el.showQr.addEventListener('click', function () {
+      TG.showQrDialog(gameUrl(), {
+        title: 'Mitspielen: Runde scannen',
+        caption: TG.code.format(state.code)
       });
     });
 

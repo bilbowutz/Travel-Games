@@ -32,6 +32,7 @@
     storageHint: document.getElementById('storage-hint'),
     boardCode: document.getElementById('board-code'),
     shareBoard: document.getElementById('share-board'),
+    showQr: document.getElementById('show-qr'),
     shareResult: document.getElementById('share-result'),
     codeForm: document.getElementById('code-form'),
     codeInput: document.getElementById('code-input'),
@@ -439,6 +440,13 @@
         url: boardUrl()
       }).then(function (result) {
         TG.reportShare(result, 'Link kopiert – jetzt einfügen und verschicken');
+      });
+    });
+
+    el.showQr.addEventListener('click', function () {
+      TG.showQrDialog(boardUrl(), {
+        title: 'Mitspielen: Brett scannen',
+        caption: TG.code.format(state.code)
       });
     });
 

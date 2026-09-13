@@ -14,6 +14,7 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
 
 - 📱 Mobile-first, Tap-Ziele ≥ 44 px, funktioniert ab 320 px Breite
 - 🔗 Kurzer Code pro Runde: gleicher Code = gleiches Brett bzw. gleiche Fragen
+- 📷 QR-Code zum Abscannen, selbst erzeugt und damit auch offline verfügbar
 - 💾 Nur `localStorage` – Spielstand und Punkte bleiben nach dem Schließen erhalten
 - 📴 Offline spielbar über einen Service Worker (ideal im Funkloch)
 - 🏠 Als PWA installierbar („Zum Home-Bildschirm hinzufügen")
@@ -31,6 +32,8 @@ Fragenreihenfolge.
 - Der Code steht in den Einstellungen jedes Spiels, z. B. `K7M-2XQ`.
 - „Teilen" verschickt Code und Link (`…/games/auto-bingo/#c=K7M2XQ`).
   Wer den Link öffnet, landet direkt in derselben Runde.
+- „QR-Code zeigen" öffnet denselben Link als QR-Code: das andere Handy hält
+  einfach die Kamera drauf. Praktisch im Auto, wo niemand Links tippen mag.
 - Eingetippte Codes dürfen klein geschrieben sein, Bindestriche sind egal, und
   `I`, `L`, `O` werden als `1`, `1`, `0` gelesen – Vertipper beim Vorlesen fallen
   damit nicht auf.
@@ -38,8 +41,14 @@ Fragenreihenfolge.
   „Ergebnis teilen" bzw. „Punktestand teilen" – ein Text fürs Familienchat.
 
 Technisch: `TG.rng(seed)` (Mulberry32) liefert eine reproduzierbare Zufallsfolge,
-`TG.code` wandelt Startwerte in Crockford-Base32 und zurück. Beides steht in
-`assets/js/app.js` und damit jedem Spiel zur Verfügung.
+`TG.code` wandelt Startwerte in Crockford-Base32 und zurück, `TG.showQrDialog(url)`
+zeigt einen Link als QR-Code. Alles steht in `assets/js/app.js` bzw.
+`assets/js/qr.js` und damit jedem Spiel zur Verfügung.
+
+Der QR-Encoder (`assets/js/qr.js`) ist bewusst selbst geschrieben statt aus einem
+CDN geladen: die Seite soll offline funktionieren und keine fremden Skripte
+nachladen. Er beherrscht den Byte-Modus mit Fehlerkorrektur L und M in den
+Versionen 1 bis 10, also Links bis etwa 200 Zeichen.
 
 Ein Code bleibt gültig, solange sich der Motiv- bzw. Fragenpool nicht ändert.
 Kommen später Einträge dazu, ergibt derselbe Code ein anderes Brett – deshalb
@@ -80,6 +89,7 @@ assets/
                             Seed-Zufall, Codes, Teilen
   js/games.js               Katalog aller Spiele (Quelle der Startseiten-Kacheln)
   js/confetti.js            Konfetti auf Canvas
+  js/qr.js                  QR-Encoder (Byte-Modus, Level L/M, Version 1–10)
   img/                      Icons (Favicon, PWA, Apple Touch)
 games/
   auto-bingo/
