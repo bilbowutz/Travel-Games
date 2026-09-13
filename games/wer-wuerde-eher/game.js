@@ -22,7 +22,7 @@
     setupActions: document.getElementById('setup-actions'),
     playActions: document.getElementById('play-actions'),
     startGame: document.getElementById('start-game'),
-    skipQuestion: document.getElementById('skip-question'),
+    nextQuestion: document.getElementById('next-question'),
     question: document.getElementById('question'),
     questionCard: document.querySelector('.question-card'),
     playHint: document.querySelector('.play-hint'),
@@ -176,15 +176,15 @@
       el.questionCard.querySelector('.question-card__lead').textContent = 'Runde vorbei';
       el.playHint.textContent = 'Punktestand ansehen oder eine neue Runde starten.';
       el.playerGrid.hidden = true;
-      el.skipQuestion.disabled = true;
+      el.nextQuestion.disabled = true;
       return;
     }
 
     el.questionCard.querySelector('.question-card__lead').textContent = 'Wer würde eher …';
     el.question.textContent = currentQuestion() + '?';
-    el.playHint.textContent = 'Tippt auf die Person, auf die die meisten zeigen.';
+    el.playHint.textContent = 'Tippt auf die Person, auf die die meisten zeigen – oder auf „Weiter“.';
     el.playerGrid.hidden = false;
-    el.skipQuestion.disabled = false;
+    el.nextQuestion.disabled = false;
 
     el.questionCard.classList.remove('is-new');
     void el.questionCard.offsetWidth; // Animation neu starten
@@ -384,7 +384,7 @@
       award(Number(button.dataset.index));
     });
 
-    el.skipQuestion.addEventListener('click', function () {
+    el.nextQuestion.addEventListener('click', function () {
       if (isFinished()) return;
       TG.haptic(6);
       advance();
