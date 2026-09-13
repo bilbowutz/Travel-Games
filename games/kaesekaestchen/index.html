@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Käsekästchen – Travel Games</title>
+<meta name="description" content="Käsekästchen für unterwegs: zu zweit auf einem Handy Linien ziehen und Kästchen schließen. Offline spielbar.">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Käsekästchen">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="game.css">
+<script>
+  try {
+    var m = JSON.parse(localStorage.getItem('travelgames.theme'));
+    if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-theme', m);
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__bar">
+      <a class="back-link" href="../../"><span data-icon="chevron-left"></span>Spiele</a>
+      <span class="spacer"></span>
+      <button type="button" class="icon-btn" id="theme-toggle"></button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen" data-icon="gear"></button>
+    </div>
+    <h1 class="hero__title">Käsekästchen</h1>
+    <p class="hero__sub">Abwechselnd eine Linie ziehen. Wer ein Kästchen schließt, darf nochmal.</p>
+  </div>
+</header>
+
+<main class="wrap game-main">
+
+  <section id="setup">
+    <div class="panel">
+      <h2>Wer spielt gegen wen?</h2>
+      <p class="panel__hint">Zwei Namen. Gespielt wird abwechselnd auf diesem Handy.</p>
+      <ul class="name-list" id="name-list"></ul>
+    </div>
+  </section>
+
+  <section id="play" hidden>
+    <div class="status" aria-label="Spielstand">
+      <p class="kk-score" id="score-a"><span class="kk-dot" data-player="0"></span><span id="name-a">–</span> <b id="boxes-a">0</b></p>
+      <span class="spacer"></span>
+      <p class="kk-score" id="score-b"><span class="kk-dot" data-player="1"></span><span id="name-b">–</span> <b id="boxes-b">0</b></p>
+    </div>
+
+    <p class="kk-turn" id="turn-line">–</p>
+
+    <div class="kk-board-wrap">
+      <div class="kk-board" id="board" role="group" aria-label="Spielfeld"></div>
+    </div>
+  </section>
+
+  <section id="over" hidden>
+    <div class="panel">
+      <h2 id="over-title">Vorbei</h2>
+      <p class="panel__hint" id="over-text">–</p>
+    </div>
+  </section>
+
+  <details class="rules">
+    <summary>So wird gespielt</summary>
+    <ul>
+      <li>Abwechselnd eine Linie zwischen zwei Punkten ziehen.</li>
+      <li>Wer die vierte Seite eines Kästchens zieht, bekommt es – und ist gleich nochmal dran.</li>
+      <li>Das geht so weiter, solange man Kästchen schließt.</li>
+      <li>Wenn alle Linien gezogen sind, gewinnt, wer mehr Kästchen hat.</li>
+    </ul>
+  </details>
+
+</main>
+
+<div class="actionbar">
+  <div class="actionbar__inner" id="setup-actions">
+    <button type="button" class="btn btn--primary" id="start-game">Los geht’s</button>
+  </div>
+  <div class="actionbar__inner" id="over-actions" hidden>
+    <button type="button" class="btn" id="new-names">Neue Namen</button>
+    <button type="button" class="btn btn--primary" id="rematch">Revanche</button>
+  </div>
+</div>
+
+<dialog class="sheet" id="settings">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2>Einstellungen</h2>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="size-label">Feldgröße</span>
+      <div class="segmented" role="group" aria-labelledby="size-label" id="size-picker">
+        <button type="button" data-size="4">4 × 4</button>
+        <button type="button" data-size="5">5 × 5</button>
+        <button type="button" data-size="6">6 × 6</button>
+      </div>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label">Partie</span>
+      <p class="code-hint" id="game-summary">–</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--block" id="edit-players">Namen bearbeiten</button>
+        <button type="button" class="btn btn--block btn--danger" id="reset-game">Partie abbrechen</button>
+      </div>
+    </div>
+
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--primary" id="close-settings">Fertig</button>
+    </div>
+    <p class="sheet__hint" id="storage-hint">Alles wird nur lokal auf diesem Gerät gespeichert.</p>
+  </div>
+</dialog>
+
+<dialog class="confirm" id="confirm">
+  <h2 id="confirm-title">Sicher?</h2>
+  <p id="confirm-text"></p>
+  <div class="sheet__actions">
+    <button type="button" class="btn btn--block btn--primary" id="confirm-ok">Ja</button>
+    <button type="button" class="btn btn--block btn--ghost" id="confirm-cancel">Abbrechen</button>
+  </div>
+</dialog>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="toast-host" role="status" aria-live="polite"></div>
+
+<script src="../../assets/js/app.js"></script>
+<script src="../../assets/js/confetti.js"></script>
+<script src="rules.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

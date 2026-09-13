@@ -1,0 +1,158 @@
+/* Käsekästchen – spielspezifische Styles */
+
+:root {
+  --p0: #007aff;
+  --p1: #ff9500;
+}
+
+[data-theme="dark"] { --p0: #0a84ff; --p1: #ff9f0a; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --p0: #0a84ff; --p1: #ff9f0a; }
+}
+
+/* ---------- Kopfzeile mit Punktestand ---------- */
+
+.kk-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.kk-score b {
+  font-size: 19px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.kk-score span:not(.kk-dot) {
+  max-width: 8ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kk-score.is-turn b { color: var(--turn-color); }
+
+.kk-dot {
+  flex: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.kk-dot[data-player="0"] { background: var(--p0); }
+.kk-dot[data-player="1"] { background: var(--p1); }
+
+.kk-turn {
+  margin: 14px 0 0;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ---------- Spielfeld ---------- */
+
+.kk-board-wrap {
+  margin: 12px auto 0;
+  max-width: 440px;
+}
+
+.kk-board {
+  --dot: 20px;
+  display: grid;
+  gap: 0;
+  /* Ohne feste Höhe fallen die 1fr-Zeilen auf null zusammen und die
+     senkrechten Linien wären nicht anklickbar. */
+  aspect-ratio: 1;
+  container-type: inline-size;
+  padding: 10px;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.kk-cell { display: block; }
+
+.kk-point {
+  display: grid;
+  place-items: center;
+}
+
+.kk-point::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: .45;
+}
+
+/* Linien: unberührt als blasse Spur, gezogen in Spielerfarbe */
+.kk-line {
+  position: relative;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.kk-line::before {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  background: var(--fill);
+  transition: background .15s ease;
+}
+
+.kk-line--h::before { inset: 42% 3%; }
+.kk-line--v::before { inset: 3% 42%; }
+
+/* Größerer Tippbereich, ohne die Nachbarlinien zu überlappen */
+.kk-line::after {
+  content: "";
+  position: absolute;
+}
+
+.kk-line--h::after { inset: -9px 0; }
+.kk-line--v::after { inset: 0 -9px; }
+
+.kk-line:disabled::after { display: none; }
+
+.kk-line.is-drawn::before { background: var(--line-color); }
+.kk-line--h.is-drawn::before { inset: 38% 1%; }
+.kk-line--v.is-drawn::before { inset: 1% 38%; }
+
+.kk-line[data-owner="0"] { --line-color: var(--p0); }
+.kk-line[data-owner="1"] { --line-color: var(--p1); }
+
+.kk-line:not(:disabled):active::before { background: var(--text-muted); }
+
+/* Kästchen */
+.kk-box {
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  font-size: clamp(11px, 3.4cqw, 17px);
+  font-weight: 700;
+  color: transparent;
+}
+
+.kk-box[data-owner="0"] {
+  background: color-mix(in srgb, var(--p0) 16%, transparent);
+  color: var(--p0);
+}
+
+.kk-box[data-owner="1"] {
+  background: color-mix(in srgb, var(--p1) 16%, transparent);
+  color: var(--p1);
+}
+
+.kk-box.is-new { animation: box-pop .32s ease; }
+
+@keyframes box-pop {
+  0% { transform: scale(.6); opacity: 0; }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}

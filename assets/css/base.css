@@ -806,6 +806,47 @@ button {
   overflow-wrap: anywhere;
 }
 
+/* ---------- Sichtschutz ---------- */
+
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--accent);
+  color: #fff;
+  text-align: center;
+}
+
+.curtain[hidden] { display: none !important; }
+
+.curtain__inner {
+  width: min(100%, 360px);
+  animation: curtain-in .22s ease both;
+}
+
+@keyframes curtain-in { from { opacity: 0; transform: translateY(10px); } }
+
+.curtain__icon { font-size: 52px; margin: 0 0 10px; }
+
+.curtain__title {
+  font-size: clamp(23px, 7vw, 30px);
+  overflow-wrap: anywhere;
+}
+
+.curtain__note {
+  margin: 12px 0 28px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, .85);
+}
+
+.curtain .btn--primary {
+  background: #fff;
+  color: var(--accent);
+}
+
 /* ---------- Konfetti ---------- */
 
 #confetti {

@@ -37,6 +37,14 @@
       status: 'ready'
     },
     {
+      id: 'kaesekaestchen',
+      name: 'Käsekästchen',
+      emoji: '▫️',
+      description: 'Linien ziehen, Kästchen schließen – zu zweit',
+      href: 'games/kaesekaestchen/',
+      status: 'ready'
+    },
+    {
       id: 'farben-rennen',
       name: 'Farben-Rennen',
       emoji: '🎨',
