@@ -37,6 +37,14 @@
       status: 'ready'
     },
     {
+      id: 'galgenmaennchen',
+      name: 'Galgenmännchen',
+      emoji: '🚀',
+      description: 'Wort erraten, bevor die Rakete fertig ist',
+      href: 'games/galgenmaennchen/',
+      status: 'ready'
+    },
+    {
       id: 'erzaehlwuerfel',
       name: 'Erzählwürfel',
       emoji: '🎴',

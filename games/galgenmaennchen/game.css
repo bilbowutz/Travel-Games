@@ -1,0 +1,132 @@
+/* Galgenmännchen – spielspezifische Styles */
+
+/* ---------- Rakete ---------- */
+
+.gm-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 16px 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.gm-rocket {
+  width: clamp(120px, 34vw, 170px);
+  height: auto;
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.gm-part {
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+
+.gm-part.is-built { opacity: 1; }
+
+.gm-part[data-part="6"] circle { fill: var(--accent-soft); }
+
+.gm-flame {
+  opacity: 0;
+  fill: var(--gold);
+  stroke: none;
+}
+
+.gm-rocket.is-launched .gm-flame { opacity: 1; }
+
+.gm-rocket.is-launched { animation: rocket-launch 1s ease-in .15s both; }
+
+@keyframes rocket-launch {
+  0% { transform: translateY(0); }
+  20% { transform: translateY(6px); }
+  100% { transform: translateY(-70px); opacity: .25; }
+}
+
+.gm-left {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.gm-left.is-tight { color: var(--danger); font-weight: 600; }
+
+/* ---------- Wort ---------- */
+
+.gm-word {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 8px;
+  margin: 18px 0 0;
+  font-family: ui-monospace, "SF Mono", "Roboto Mono", Menlo, monospace;
+  font-size: clamp(22px, 7vw, 30px);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: .02em;
+}
+
+.gm-letter {
+  min-width: 1ch;
+  border-bottom: 3px solid var(--border);
+  padding-bottom: 1px;
+  color: var(--text);
+}
+
+.gm-letter.is-open { color: transparent; }
+
+.gm-letter.is-missed {
+  border-bottom-color: var(--danger);
+  color: var(--danger);
+}
+
+/* ---------- Tastatur ---------- */
+
+.gm-keys {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gm-key {
+  width: 100%;
+  min-height: 46px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: var(--surface);
+  font-size: 17px;
+  font-weight: 500;
+  transition: opacity .15s ease, transform .1s ease, background .15s ease;
+}
+
+.gm-key:active { transform: scale(.94); }
+
+.gm-key.is-hit {
+  background: var(--found-soft);
+  color: var(--found);
+  font-weight: 700;
+}
+
+.gm-key.is-miss {
+  background: var(--fill);
+  color: var(--text-muted);
+  opacity: .5;
+}
+
+.gm-key:disabled { pointer-events: none; }
+
+/* ---------- Eingabe ---------- */
+
+.gm-secret {
+  width: 100%;
+  text-align: center;
+  letter-spacing: .3em;
+}

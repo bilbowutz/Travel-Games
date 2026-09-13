@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Galgenmännchen – Travel Games</title>
+<meta name="description" content="Wortraten für unterwegs: Buchstaben tippen, bevor die Rakete ohne dich startet. Allein oder zu zweit, offline spielbar.">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Wortraten">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="game.css">
+<script>
+  try {
+    var m = JSON.parse(localStorage.getItem('travelgames.theme'));
+    if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-theme', m);
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__bar">
+      <a class="back-link" href="../../"><span data-icon="chevron-left"></span>Spiele</a>
+      <span class="spacer"></span>
+      <button type="button" class="icon-btn" id="theme-toggle"></button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen" data-icon="gear"></button>
+    </div>
+    <h1 class="hero__title">Galgenmännchen</h1>
+    <p class="hero__sub">Buchstaben raten. Bei jedem Fehler wächst die Rakete – ist sie fertig, startet sie ohne dich.</p>
+  </div>
+</header>
+
+<main class="wrap game-main">
+
+  <section id="setup">
+    <div class="panel">
+      <h2>Wie wollt ihr spielen?</h2>
+      <p class="panel__hint">Allein rät man gegen ein zufälliges Wort. Zu zweit denkt sich eine Person eines aus.</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--block btn--primary" id="mode-solo">Allein raten</button>
+        <button type="button" class="btn btn--block" id="mode-duo">Zu zweit</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="enter" hidden>
+    <div class="panel">
+      <h2>Wort ausdenken</h2>
+      <p class="panel__hint">Nur Buchstaben, drei bis sechzehn davon. Der andere sieht es nicht.</p>
+      <form id="word-form">
+        <input class="text-input gm-secret" id="word-input" type="password" inputmode="text"
+               autocomplete="off" autocapitalize="characters" spellcheck="false"
+               placeholder="Geheimes Wort" maxlength="16">
+      </form>
+    </div>
+  </section>
+
+  <section id="play" hidden>
+    <div class="gm-stage">
+      <svg class="gm-rocket" id="rocket" viewBox="0 0 100 145" aria-hidden="true">
+        <g class="gm-part" data-part="1"><path d="M18 132h64" /></g>
+        <g class="gm-part" data-part="2"><path d="M40 112V62h20v50z" /></g>
+        <g class="gm-part" data-part="3"><path d="M40 62 50 28l10 34z" /></g>
+        <g class="gm-part" data-part="4"><path d="M40 112 27 130l13-6z" /></g>
+        <g class="gm-part" data-part="5"><path d="M60 112l13 18-13-6z" /></g>
+        <g class="gm-part" data-part="6"><circle cx="50" cy="78" r="7" /></g>
+        <g class="gm-flame" id="flame"><path d="M42 124q8 21 16 0-8 6-16 0z" /></g>
+      </svg>
+      <p class="gm-left" id="left">6 Fehler frei</p>
+    </div>
+
+    <p class="gm-word" id="word" aria-live="polite"></p>
+
+    <ul class="gm-keys" id="keys"></ul>
+  </section>
+
+  <section id="over" hidden>
+    <div class="panel">
+      <h2 id="over-title">–</h2>
+      <p class="panel__hint" id="over-text">–</p>
+    </div>
+  </section>
+
+  <details class="rules">
+    <summary>So wird gespielt</summary>
+    <ul>
+      <li>Buchstaben antippen, die im Wort vorkommen könnten.</li>
+      <li>Richtig? Der Buchstabe erscheint an allen passenden Stellen.</li>
+      <li>Falsch? Ein Teil der Rakete wird gebaut.</li>
+      <li>Nach sechs Fehlern ist die Rakete fertig und startet ohne dich.</li>
+      <li>Zu zweit: Erst tippt eine Person das Wort ein, dann wandert das Handy.</li>
+    </ul>
+  </details>
+
+</main>
+
+<div class="actionbar">
+  <div class="actionbar__inner" id="enter-actions" hidden>
+    <button type="button" class="btn btn--primary" id="word-done">Wort merken</button>
+  </div>
+  <div class="actionbar__inner" id="over-actions" hidden>
+    <button type="button" class="btn" id="change-mode">Anders spielen</button>
+    <button type="button" class="btn btn--primary" id="again">Nochmal</button>
+  </div>
+</div>
+
+<div class="curtain" id="curtain" hidden>
+  <div class="curtain__inner">
+    <p class="curtain__icon" aria-hidden="true">🙈</p>
+    <h2 class="curtain__title" id="curtain-title">Weitergeben</h2>
+    <p class="curtain__note" id="curtain-note"></p>
+    <button type="button" class="btn btn--primary btn--block" id="curtain-go">Weiter</button>
+  </div>
+</div>
+
+<dialog class="sheet" id="settings">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2>Einstellungen</h2>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="level-label">Schwierigkeit beim Alleinspielen</span>
+      <div class="segmented" role="group" aria-labelledby="level-label" id="level-picker">
+        <button type="button" data-level="leicht">Leicht</button>
+        <button type="button" data-level="mittel">Mittel</button>
+        <button type="button" data-level="schwer">Schwer</button>
+      </div>
+    </div>
+
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--danger" id="reset-game">Runde abbrechen</button>
+      <button type="button" class="btn btn--block btn--primary" id="close-settings">Fertig</button>
+    </div>
+    <p class="sheet__hint" id="storage-hint">Alles wird nur lokal auf diesem Gerät gespeichert.</p>
+  </div>
+</dialog>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="toast-host" role="status" aria-live="polite"></div>
+
+<script src="../../assets/js/app.js"></script>
+<script src="../../assets/js/confetti.js"></script>
+<script src="../../assets/js/words.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
