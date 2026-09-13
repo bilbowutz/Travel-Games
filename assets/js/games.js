@@ -37,6 +37,14 @@
       status: 'ready'
     },
     {
+      id: 'malen-und-raten',
+      name: 'Malen und Raten',
+      emoji: '🎨',
+      description: 'Mit dem Finger zeichnen, die anderen raten',
+      href: 'games/malen-und-raten/',
+      status: 'ready'
+    },
+    {
       id: 'galgenmaennchen',
       name: 'Galgenmännchen',
       emoji: '🚀',

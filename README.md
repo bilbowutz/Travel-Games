@@ -16,6 +16,12 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
   Flotte sieht.
 - **Kniffel** – der Würfelklassiker für zwei bis sechs, alle auf einem Gerät.
   Das Blatt zeigt für jeden Wurf, was welches Feld bringen würde.
+- **Malen und Raten** – eine Person zeichnet mit dem Finger, die anderen rufen.
+- **Galgenmännchen** – Buchstaben raten, bevor die Rakete ohne dich startet.
+  Allein gegen ein Zufallswort oder zu zweit mit selbst gedachtem Wort.
+- **Käsekästchen** – Linien ziehen, Kästchen schließen, zu zweit auf einem Handy.
+- **Erzählwürfel** – Symbole würfeln und daraus gemeinsam eine Geschichte bauen.
+  Kooperativ, ohne Punkte und ohne Gewinner.
 
 ## Features
 
@@ -101,6 +107,8 @@ assets/
   js/nameEditor             (in app.js) Namensliste, von mehreren Spielen genutzt
   js/confetti.js            Konfetti auf Canvas
   js/qr.js                  QR-Encoder (Byte-Modus, Level L/M, Version 1–10)
+  js/words.js               188 zeichenbare Hauptwörter in drei Stufen,
+                            geteilt von Malen und Raten und Galgenmännchen
   img/                      Icons (Favicon, PWA, Apple Touch)
 games/
   auto-bingo/
@@ -128,6 +136,20 @@ games/
     game.css                Würfel, Blatt, Endstand
     game.js                 Züge, Würfeln, Halten, Eintragen, Speichern
     scoring.js              Wertung ohne Oberfläche (getrennt testbar)
+  malen-und-raten/
+    index.html, game.css, game.js
+                            Zeichenfläche, Uhr, Begriffskarte, Punkte
+  galgenmaennchen/
+    index.html, game.css, game.js
+                            Rakete, Tastatur, Zwei-Personen-Modus
+  kaesekaestchen/
+    index.html, game.css, game.js
+                            Linienraster und Punktestand
+    rules.js                Regelwerk ohne Oberfläche (getrennt testbar)
+  erzaehlwuerfel/
+    index.html, game.css, game.js
+                            Symbolwürfel und Satzanfänge
+    symbols.js              59 bewusst mehrdeutige Symbole
 ```
 
 ## Ein neues Spiel ergänzen
@@ -166,6 +188,11 @@ Fläche helle oder dunkle Schrift lesbar ist – bei neuen Farben mitpflegen.
 **Kniffel-Wertung** steht in `games/kniffel/scoring.js`. Gespielt wird mit
 oberem Bonus ab 63 Punkten und 100 Extrapunkten für jeden weiteren Kniffel;
 das Feld darf danach frei gewählt werden.
+
+**Begriffe** für Malen und Raten und Galgenmännchen stehen in
+`assets/js/words.js`. Nur Hauptwörter, die sich zeichnen lassen – dann taugen
+sie auch zum Raten. Wichtig beim Ergänzen: keine Leerzeichen und Bindestriche,
+sonst stimmen die Buchstabenfelder im Galgenmännchen nicht.
 
 **Schiffe-versenken-Regeln** stehen in `games/schiffe-versenken/rules.js`,
 bewusst getrennt von der Oberfläche. Dort liegen Flotte, Brettgröße und die

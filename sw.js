@@ -1,6 +1,6 @@
 /* Offline-Cache für Travel Games.
    CACHE hochzählen, wenn sich Dateien geändert haben. */
-const CACHE = 'travel-games-v10';
+const CACHE = 'travel-games-v11';
 
 const PRECACHE = [
   './',
@@ -54,7 +54,11 @@ const PRECACHE = [
   './games/galgenmaennchen/',
   './games/galgenmaennchen/index.html',
   './games/galgenmaennchen/game.css',
-  './games/galgenmaennchen/game.js'
+  './games/galgenmaennchen/game.js',
+  './games/malen-und-raten/',
+  './games/malen-und-raten/index.html',
+  './games/malen-und-raten/game.css',
+  './games/malen-und-raten/game.js'
 ];
 
 self.addEventListener('install', (event) => {

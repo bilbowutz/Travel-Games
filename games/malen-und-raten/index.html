@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Malen und Raten – Travel Games</title>
+<meta name="description" content="Malen und Raten für unterwegs: mit dem Finger zeichnen, die anderen raten. Auf einem Handy, offline spielbar.">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Malen und Raten">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="game.css">
+<script>
+  try {
+    var m = JSON.parse(localStorage.getItem('travelgames.theme'));
+    if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-theme', m);
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="hero" id="hero">
+  <div class="wrap">
+    <div class="hero__bar">
+      <a class="back-link" href="../../"><span data-icon="chevron-left"></span>Spiele</a>
+      <span class="spacer"></span>
+      <button type="button" class="icon-btn" id="theme-toggle"></button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen" data-icon="gear"></button>
+    </div>
+    <h1 class="hero__title">Malen und Raten</h1>
+    <p class="hero__sub">Eine Person zeichnet mit dem Finger, alle anderen rufen, was es sein könnte.</p>
+  </div>
+</header>
+
+<main class="wrap game-main">
+
+  <section id="setup">
+    <div class="panel">
+      <h2>Wer macht mit?</h2>
+      <p class="panel__hint">Zwei bis acht Namen. Das Handy wandert zum Zeichnen weiter.</p>
+      <ul class="name-list" id="name-list"></ul>
+      <button type="button" class="btn btn--block" id="add-player">＋ Mitspieler:in</button>
+    </div>
+  </section>
+
+  <!-- Begriff nur für die zeichnende Person -->
+  <section id="word" hidden>
+    <div class="panel mr-wordcard">
+      <p class="mr-wordcard__lead">Dein Begriff</p>
+      <p class="mr-wordcard__word" id="secret-word">–</p>
+      <p class="panel__hint" id="swap-hint">Nicht laut sagen. Zeigen geht auch nicht.</p>
+      <button type="button" class="btn btn--block" id="swap-word">Anderen Begriff</button>
+    </div>
+  </section>
+
+  <!-- Zeichnen -->
+  <section id="draw" hidden>
+    <div class="mr-bar">
+      <p class="mr-bar__name" id="drawer-name">–</p>
+      <p class="mr-bar__round">Runde <span id="round-number">1</span></p>
+    </div>
+
+    <div class="mr-timer" id="timer" hidden>
+      <div class="mr-timer__fill" id="timer-fill"></div>
+    </div>
+    <p class="mr-timer__text" id="timer-text" hidden>–</p>
+
+    <canvas class="mr-canvas" id="canvas" width="600" height="600"></canvas>
+
+    <div class="mr-tools">
+      <ul class="mr-colors" id="colors"></ul>
+      <div class="mr-tools__actions">
+        <button type="button" class="btn mr-tool" id="undo">Zurück</button>
+        <button type="button" class="btn mr-tool" id="clear">Alles weg</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Wer hat es erraten -->
+  <section id="resolve" hidden>
+    <div class="panel">
+      <h2 id="resolve-title">Wer hat es erraten?</h2>
+      <p class="panel__hint" id="resolve-word">–</p>
+      <ul class="mr-guessers" id="guessers"></ul>
+      <button type="button" class="btn btn--block" id="nobody">Niemand</button>
+    </div>
+  </section>
+
+  <details class="rules">
+    <summary>So wird gespielt</summary>
+    <ul>
+      <li>Das Handy geht an die Person, die zeichnet – sie sieht den Begriff allein.</li>
+      <li>Gezeichnet wird mit dem Finger. Keine Buchstaben, keine Zahlen.</li>
+      <li>Die anderen rufen einfach, was sie erkennen.</li>
+      <li>Wer richtig rät, bekommt zwei Punkte, die zeichnende Person einen.</li>
+      <li>Danach ist die nächste Person mit Zeichnen dran.</li>
+    </ul>
+  </details>
+
+</main>
+
+<div class="actionbar">
+  <div class="actionbar__inner" id="setup-actions">
+    <button type="button" class="btn btn--primary" id="start-game">Los geht’s</button>
+  </div>
+  <div class="actionbar__inner" id="word-actions" hidden>
+    <button type="button" class="btn btn--primary" id="start-draw">Zeichnen</button>
+  </div>
+  <div class="actionbar__inner" id="draw-actions" hidden>
+    <button type="button" class="btn" id="give-up">Niemand</button>
+    <button type="button" class="btn btn--primary" id="guessed">Erraten!</button>
+  </div>
+</div>
+
+<div class="curtain" id="curtain" hidden>
+  <div class="curtain__inner">
+    <p class="curtain__icon" aria-hidden="true">🙈</p>
+    <h2 class="curtain__title" id="curtain-title">Weitergeben</h2>
+    <p class="curtain__note" id="curtain-note"></p>
+    <button type="button" class="btn btn--primary btn--block" id="curtain-go">Weiter</button>
+  </div>
+</div>
+
+<dialog class="sheet" id="scores">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2>Punktestand</h2>
+    <ol class="list-group score-list" id="score-list"></ol>
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--primary" id="close-scores">Weiterspielen</button>
+      <button type="button" class="btn btn--block" id="share-scores">Stand teilen</button>
+      <button type="button" class="btn btn--block btn--ghost" id="reset-scores">Punkte zurücksetzen</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="sheet" id="settings">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2>Einstellungen</h2>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="time-label">Zeit zum Zeichnen</span>
+      <div class="segmented" role="group" aria-labelledby="time-label" id="time-picker">
+        <button type="button" data-time="30">30 s</button>
+        <button type="button" data-time="60">60 s</button>
+        <button type="button" data-time="90">90 s</button>
+        <button type="button" data-time="0">ohne</button>
+      </div>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="level-label">Begriffe</span>
+      <div class="segmented" role="group" aria-labelledby="level-label" id="level-picker">
+        <button type="button" data-level="leicht">Leicht</button>
+        <button type="button" data-level="mittel">Mittel</button>
+        <button type="button" data-level="schwer">Schwer</button>
+      </div>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label">Mitspieler:innen</span>
+      <p class="code-hint" id="player-summary">–</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--block" id="open-scores">Punktestand</button>
+        <button type="button" class="btn btn--block" id="edit-players">Namen bearbeiten</button>
+        <button type="button" class="btn btn--block btn--danger" id="reset-game">Partie abbrechen</button>
+      </div>
+    </div>
+
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--primary" id="close-settings">Fertig</button>
+    </div>
+    <p class="sheet__hint" id="storage-hint">Alles wird nur lokal auf diesem Gerät gespeichert.</p>
+  </div>
+</dialog>
+
+<dialog class="confirm" id="confirm">
+  <h2 id="confirm-title">Sicher?</h2>
+  <p id="confirm-text"></p>
+  <div class="sheet__actions">
+    <button type="button" class="btn btn--block btn--primary" id="confirm-ok">Ja</button>
+    <button type="button" class="btn btn--block btn--ghost" id="confirm-cancel">Abbrechen</button>
+  </div>
+</dialog>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="toast-host" role="status" aria-live="polite"></div>
+
+<script src="../../assets/js/app.js"></script>
+<script src="../../assets/js/confetti.js"></script>
+<script src="../../assets/js/words.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

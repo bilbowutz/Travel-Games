@@ -1,0 +1,195 @@
+/* Malen und Raten – spielspezifische Styles */
+
+/* ---------- Begriffskarte ---------- */
+
+.mr-wordcard { text-align: center; }
+
+.mr-wordcard__lead {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.mr-wordcard__word {
+  margin: 10px 0 0;
+  font-size: clamp(30px, 9vw, 44px);
+  font-weight: 700;
+  letter-spacing: -.024em;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Kopfzeile beim Zeichnen ---------- */
+
+.mr-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.mr-bar__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.mr-bar__round {
+  flex: none;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ---------- Uhr ---------- */
+
+.mr-timer {
+  height: 6px;
+  margin: 10px 0 0;
+  border-radius: 999px;
+  background: var(--fill);
+  overflow: hidden;
+}
+
+.mr-timer__fill {
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width .2s linear, background .3s ease;
+}
+
+.mr-timer__fill.is-tight { background: var(--danger); }
+
+.mr-timer__text {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.mr-timer__text.is-over { color: var(--danger); font-weight: 600; }
+
+/* ---------- Zeichenfläche ---------- */
+
+/* Bewusst immer weiß: auf schwarzem Grund wären dunkle Striche unsichtbar. */
+.mr-canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  height: auto;
+  margin: 12px 0 0;
+  border-radius: var(--radius);
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .08) inset;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.mr-canvas.is-locked { opacity: .6; }
+
+/* ---------- Werkzeuge ---------- */
+
+.mr-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.mr-colors {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mr-color {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .12) inset;
+  transition: transform .12s ease;
+}
+
+.mr-color[aria-pressed="true"] {
+  transform: scale(1.18);
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--text);
+}
+
+.mr-tools__actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.mr-tool {
+  min-height: 38px;
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+/* ---------- Wer hat geraten ---------- */
+
+.mr-guessers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.mr-guesser {
+  width: 100%;
+  min-height: 50px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--fill);
+  font-size: 16px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  transition: transform .12s ease, background .15s ease;
+}
+
+.mr-guesser:active { transform: scale(.97); background: var(--accent-soft); }
+
+/* ---------- Punktestand ---------- */
+
+.score-list { margin: 18px 0 0; }
+
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border: 0;
+  background: transparent;
+  font-weight: 500;
+}
+
+.score-row__rank { flex: none; width: 26px; font-size: 17px; text-align: center; }
+.score-row__name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+
+.score-row__points {
+  flex: none;
+  font-size: 19px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-row--lead { background: var(--gold-soft); }
+.score-row--lead .score-row__points { color: var(--gold); }
