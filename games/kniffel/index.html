@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kniffel – Travel Games</title>
+<meta name="description" content="Kniffel fürs Handy: zu mehreren auf einem Gerät, Würfel halten, Blatt füllen. Offline spielbar, ohne Anmeldung.">
+<meta name="theme-color" content="#2f6bff">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kniffel">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="game.css">
+<script>
+  try {
+    var m = JSON.parse(localStorage.getItem('travelgames.theme'));
+    if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-theme', m);
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__bar">
+      <a class="back-link" href="../../">‹ Spiele</a>
+      <span class="spacer"></span>
+      <button type="button" class="icon-btn" id="theme-toggle">🌗</button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen">⚙️</button>
+    </div>
+    <h1 class="hero__title">Kniffel 🎲</h1>
+    <p class="hero__sub">Dreimal würfeln, Würfel halten, Feld aussuchen. Das Handy wandert reihum.</p>
+  </div>
+</header>
+
+<main class="wrap game-main">
+
+  <section id="setup">
+    <div class="panel">
+      <h2>Wer würfelt mit?</h2>
+      <p class="panel__hint">Zwei bis sechs Namen. Jede:r bekommt ein eigenes Blatt.</p>
+      <ul class="name-list" id="name-list"></ul>
+      <button type="button" class="btn btn--block" id="add-player">＋ Mitspieler:in</button>
+    </div>
+  </section>
+
+  <section id="play" hidden>
+    <div class="status">
+      <p class="status__count" id="turn-name">–</p>
+      <p class="status__bingos" id="round-chip"><span id="round-number">Runde 1/13</span></p>
+    </div>
+
+    <ul class="dice-row" id="dice-row"></ul>
+    <p class="dice-hint" id="dice-hint">Tippe auf „Würfeln“.</p>
+
+    <ul class="score-list" id="score-list"></ul>
+  </section>
+
+  <section id="over" hidden>
+    <div class="panel">
+      <h2 id="over-title">Vorbei</h2>
+      <p class="panel__hint">Alle 13 Felder sind gefüllt.</p>
+    </div>
+    <ol class="rank-list" id="rank-list"></ol>
+  </section>
+
+  <details class="rules">
+    <summary>So wird gespielt</summary>
+    <ul>
+      <li>Bis zu dreimal würfeln. Zwischendurch Würfel antippen, die liegen bleiben sollen.</li>
+      <li>Danach ein freies Feld im Blatt antippen – der Wert wird eingetragen.</li>
+      <li>Passt nichts? Dann muss ein Feld gestrichen werden, also mit 0.</li>
+      <li>Ab 63 Punkten im oberen Teil gibt es 35 Punkte Bonus.</li>
+      <li>Ein zweiter Kniffel bringt 100 Extrapunkte, das Feld darf frei gewählt werden.</li>
+      <li>Nach 13 Runden gewinnt, wer am meisten hat.</li>
+    </ul>
+  </details>
+
+</main>
+
+<div class="actionbar">
+  <div class="actionbar__inner" id="setup-actions">
+    <button type="button" class="btn btn--primary" id="start-game">Los geht’s</button>
+  </div>
+  <div class="actionbar__inner" id="play-actions" hidden>
+    <button type="button" class="btn" id="open-sheets">🏆 Blätter</button>
+    <button type="button" class="btn btn--primary" id="roll-dice">🎲 Würfeln</button>
+  </div>
+  <div class="actionbar__inner" id="over-actions" hidden>
+    <button type="button" class="btn" id="new-names">Neue Namen</button>
+    <button type="button" class="btn btn--primary" id="new-round">Neue Runde</button>
+  </div>
+</div>
+
+<dialog class="sheet" id="sheets">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2>Blätter</h2>
+    <ul class="tally-list" id="tally-list"></ul>
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--primary" id="close-sheets">Weiterspielen</button>
+      <button type="button" class="btn btn--block" id="share-sheets">🔗 Stand teilen</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="sheet" id="settings">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2>Einstellungen</h2>
+    <div class="sheet__group">
+      <span class="sheet__label">Partie</span>
+      <p class="code-hint" id="game-summary">–</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--block" id="edit-players">Namen bearbeiten</button>
+        <button type="button" class="btn btn--block btn--danger" id="reset-game">Partie abbrechen</button>
+      </div>
+    </div>
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--primary" id="close-settings">Fertig</button>
+    </div>
+    <p class="sheet__hint" id="storage-hint">Alles wird nur lokal auf diesem Gerät gespeichert.</p>
+  </div>
+</dialog>
+
+<dialog class="confirm" id="confirm">
+  <h2 id="confirm-title">Sicher?</h2>
+  <p id="confirm-text"></p>
+  <div class="sheet__actions">
+    <button type="button" class="btn btn--block btn--primary" id="confirm-ok">Ja</button>
+    <button type="button" class="btn btn--block btn--ghost" id="confirm-cancel">Abbrechen</button>
+  </div>
+</dialog>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="toast-host" role="status" aria-live="polite"></div>
+
+<script src="../../assets/js/app.js"></script>
+<script src="../../assets/js/confetti.js"></script>
+<script src="scoring.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

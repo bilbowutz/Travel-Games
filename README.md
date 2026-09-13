@@ -14,6 +14,8 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
 - **Schiffe versenken** – zu zweit auf einem Handy, abwechselnd. Zwischen den
   Zügen schiebt sich ein Sichtschutz davor, damit niemand die gegnerische
   Flotte sieht.
+- **Kniffel** – der Würfelklassiker für zwei bis sechs, alle auf einem Gerät.
+  Das Blatt zeigt für jeden Wurf, was welches Feld bringen würde.
 
 ## Features
 
@@ -118,6 +120,11 @@ games/
     game.css                Spielraster, Sichtschutz
     game.js                 Phasen, Aufstellen, Schießen, Speichern
     rules.js                Regelwerk ohne Oberfläche (getrennt testbar)
+  kniffel/
+    index.html              Spielseite
+    game.css                Würfel, Blatt, Endstand
+    game.js                 Züge, Würfeln, Halten, Eintragen, Speichern
+    scoring.js              Wertung ohne Oberfläche (getrennt testbar)
 ```
 
 ## Ein neues Spiel ergänzen
@@ -152,6 +159,10 @@ Beim Ergänzen die `version` hochzählen.
 
 **Autofarben** stehen in `games/farben-rennen/colors.js`. `ink` sagt, ob auf der
 Fläche helle oder dunkle Schrift lesbar ist – bei neuen Farben mitpflegen.
+
+**Kniffel-Wertung** steht in `games/kniffel/scoring.js`. Gespielt wird mit
+oberem Bonus ab 63 Punkten und 100 Extrapunkten für jeden weiteren Kniffel;
+das Feld darf danach frei gewählt werden.
 
 **Schiffe-versenken-Regeln** stehen in `games/schiffe-versenken/rules.js`,
 bewusst getrennt von der Oberfläche. Dort liegen Flotte, Brettgröße und die

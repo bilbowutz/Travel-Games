@@ -323,7 +323,7 @@ a.game-card:active { transform: scale(.975); box-shadow: var(--shadow-md); }
 .toast-host {
   position: fixed;
   left: 50%;
-  bottom: max(20px, env(safe-area-inset-bottom));
+  bottom: calc(max(20px, env(safe-area-inset-bottom)) + var(--viewport-bottom, 0px));
   z-index: 60;
   display: flex;
   flex-direction: column;
@@ -426,7 +426,7 @@ a.game-card:active { transform: scale(.975); box-shadow: var(--shadow-md); }
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: var(--viewport-bottom, 0px);
   z-index: 40;
   padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
   background: color-mix(in srgb, var(--bg) 88%, transparent);
@@ -444,7 +444,7 @@ a.game-card:active { transform: scale(.975); box-shadow: var(--shadow-md); }
 .actionbar .btn { flex: 1; }
 
 /* Meldungen über der Aktionsleiste halten */
-.toast-host { bottom: calc(88px + env(safe-area-inset-bottom)); }
+.toast-host { bottom: calc(88px + var(--viewport-bottom, 0px) + env(safe-area-inset-bottom)); }
 
 /* ---------- Bottom-Sheet ---------- */
 

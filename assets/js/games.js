@@ -14,6 +14,15 @@
       status: 'ready'
     },
     {
+      id: 'kniffel',
+      name: 'Kniffel',
+      emoji: '🎲',
+      description: 'Der Würfelklassiker – zu sechst auf einem Handy, das Blatt rechnet mit.',
+      href: 'games/kniffel/',
+      badge: 'Spielen',
+      status: 'ready'
+    },
+    {
       id: 'wer-wuerde-eher',
       name: 'Wer würde eher …?',
       emoji: '🤔',

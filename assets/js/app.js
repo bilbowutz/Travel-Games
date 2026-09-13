@@ -440,5 +440,40 @@
     });
   };
 
+  /* ---------- Unterkante des sichtbaren Bereichs ---------- */
+
+  /* Auf Handys ist das Layout-Viewport oft höher als der sichtbare Ausschnitt:
+     die eingeblendete Browserleiste zählt mit. Eine unten fixierte Leiste rutscht
+     dann aus dem Bild. --viewport-bottom hält sie an der sichtbaren Kante –
+     und über der Tastatur, wenn die aufgeht. */
+  TG.trackViewportBottom = function () {
+    var viewport = window.visualViewport;
+    if (!viewport) return;
+
+    var pending = false;
+
+    function sync() {
+      pending = false;
+      var offset = Math.max(0, Math.round(window.innerHeight - viewport.height - viewport.offsetTop));
+      document.documentElement.style.setProperty('--viewport-bottom', offset + 'px');
+    }
+
+    /* Die Höhe kann sich auch ändern, ohne dass ein resize kommt – etwa wenn die
+       Seite erst durch Nachladen scrollbar wird. Deshalb zusätzlich beim Scrollen. */
+    function schedule() {
+      if (pending) return;
+      pending = true;
+      window.requestAnimationFrame(sync);
+    }
+
+    viewport.addEventListener('resize', schedule);
+    viewport.addEventListener('scroll', schedule);
+    window.addEventListener('resize', schedule);
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('orientationchange', schedule);
+    sync();
+  };
+
   TG.theme.apply(TG.theme.get());
+  TG.trackViewportBottom();
 })(window, document);
