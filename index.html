@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Travel Games – Spiele für unterwegs</title>
+<meta name="description" content="Kleine Reisespiele fürs Handy: Auto Bingo und mehr. Offline spielbar, ohne Anmeldung, ohne Server.">
+<meta name="theme-color" content="#2f6bff">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Travel Games">
+<link rel="stylesheet" href="assets/css/base.css">
+<script>
+  // Farbschema vor dem ersten Frame setzen, sonst blitzt Weiß auf.
+  try {
+    var m = JSON.parse(localStorage.getItem('travelgames.theme'));
+    if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-theme', m);
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__bar">
+      <span class="spacer"></span>
+      <button type="button" class="icon-btn" id="theme-toggle">🌗</button>
+    </div>
+    <h1 class="hero__title">Travel Games</h1>
+    <p class="hero__sub">Kleine Spiele für lange Fahrten. Ohne Anmeldung, ohne Server – alles bleibt auf deinem Handy.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <h2 class="section-title">Spiele</h2>
+  <ul class="game-grid" id="game-grid"></ul>
+
+  <div class="note">
+    <span class="note__icon" aria-hidden="true">📴</span>
+    <p>
+      Einmal geladen läuft alles offline – ideal im Funkloch.
+      Dein Spielstand wird nur lokal im Browser gespeichert.
+      Tipp: über das Teilen-Menü <em>„Zum Home-Bildschirm“</em> hinzufügen.
+    </p>
+  </div>
+</main>
+
+<footer class="site-footer wrap">
+  <p>Travel Games · gute Fahrt! 🚙</p>
+</footer>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/games.js"></script>
+<script>
+(function () {
+  var grid = document.getElementById('game-grid');
+
+  TG.games.forEach(function (game) {
+    var li = document.createElement('li');
+    var ready = game.status === 'ready';
+    var card = document.createElement(ready ? 'a' : 'div');
+
+    card.className = 'game-card' + (ready ? '' : ' game-card--soon');
+    if (ready) {
+      card.href = game.href;
+    } else {
+      card.setAttribute('aria-disabled', 'true');
+    }
+
+    card.innerHTML =
+      '<span class="game-card__emoji" aria-hidden="true"></span>' +
+      '<span class="game-card__name"></span>' +
+      '<span class="game-card__desc"></span>' +
+      '<span class="game-card__badge"></span>';
+
+    card.querySelector('.game-card__emoji').textContent = game.emoji;
+    card.querySelector('.game-card__name').textContent = game.name;
+    card.querySelector('.game-card__desc').textContent = game.description;
+    card.querySelector('.game-card__badge').textContent = game.badge;
+
+    li.appendChild(card);
+    grid.appendChild(li);
+  });
+
+  TG.bindThemeToggle(document.getElementById('theme-toggle'));
+  TG.registerServiceWorker('sw.js');
+})();
+</script>
+</body>
+</html>

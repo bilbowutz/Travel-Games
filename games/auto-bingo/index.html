@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Auto Bingo – Travel Games</title>
+<meta name="description" content="Auto Bingo fürs Handy: Kacheln abhaken, was du unterwegs siehst – Flugzeug, Tankstelle, Hund und mehr. Offline spielbar.">
+<meta name="theme-color" content="#2f6bff">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Auto Bingo">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="bingo.css">
+<script>
+  try {
+    var m = JSON.parse(localStorage.getItem('travelgames.theme'));
+    if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-theme', m);
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__bar">
+      <a class="back-link" href="../../">‹ Spiele</a>
+      <span class="spacer"></span>
+      <button type="button" class="icon-btn" id="theme-toggle">🌗</button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen">⚙️</button>
+    </div>
+    <h1 class="hero__title">Auto Bingo 🚗</h1>
+    <p class="hero__sub">Tippe an, was du unterwegs entdeckst. Eine volle Reihe = Bingo!</p>
+  </div>
+</header>
+
+<main class="wrap game-main">
+
+  <section class="status" aria-label="Spielstand">
+    <p class="status__count">
+      <span id="found-count">0</span><small> / <span id="total-count">25</span></small>
+    </p>
+    <div class="status__bar" role="progressbar" aria-label="Fortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress">
+      <div class="status__fill" id="progress-fill"></div>
+    </div>
+    <p class="status__bingos" id="bingo-chip" hidden>🏆 <span id="bingo-count">0</span>×&nbsp;Bingo</p>
+  </section>
+
+  <div class="board-wrap">
+    <div class="board" id="board" data-size="5" style="--cols:5" role="group" aria-label="Bingo-Brett"></div>
+  </div>
+
+  <details class="rules">
+    <summary>So wird gespielt</summary>
+    <ul>
+      <li>Wer etwas zuerst sieht, ruft es – dann wird die Kachel angetippt.</li>
+      <li>Fünf in einer Reihe, Spalte oder Diagonale: <strong>Bingo!</strong></li>
+      <li>Versehentlich getippt? Einfach nochmal antippen.</li>
+      <li>Der Spielstand bleibt gespeichert, auch wenn ihr die Seite schließt.</li>
+    </ul>
+  </details>
+
+</main>
+
+<div class="actionbar">
+  <div class="actionbar__inner">
+    <button type="button" class="btn btn--primary" id="new-game">🔀 Neues Spiel</button>
+  </div>
+</div>
+
+<!-- Einstellungen -->
+<dialog class="sheet" id="settings">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2>Einstellungen</h2>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="size-label">Brettgröße</span>
+      <div class="segmented" role="group" aria-labelledby="size-label" id="size-picker">
+        <button type="button" data-size="3">3 × 3</button>
+        <button type="button" data-size="4">4 × 4</button>
+        <button type="button" data-size="5">5 × 5</button>
+      </div>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label">Statistik</span>
+      <dl class="stats">
+        <div><dt>Spiele</dt><dd id="stat-games">0</dd></div>
+        <div><dt>Gefunden</dt><dd id="stat-found">0</dd></div>
+        <div><dt>Bingos</dt><dd id="stat-bingos">0</dd></div>
+      </dl>
+    </div>
+
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--danger" id="reset-stats">Statistik zurücksetzen</button>
+      <button type="button" class="btn btn--block btn--primary" id="close-settings">Fertig</button>
+    </div>
+
+    <p class="sheet__hint" id="storage-hint">Alles wird nur lokal auf diesem Gerät gespeichert.</p>
+  </div>
+</dialog>
+
+<!-- Bestätigung -->
+<dialog class="confirm" id="confirm">
+  <h2 id="confirm-title">Sicher?</h2>
+  <p id="confirm-text"></p>
+  <div class="sheet__actions">
+    <button type="button" class="btn btn--block btn--primary" id="confirm-ok">Ja</button>
+    <button type="button" class="btn btn--block btn--ghost" id="confirm-cancel">Abbrechen</button>
+  </div>
+</dialog>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="toast-host" role="status" aria-live="polite"></div>
+
+<script src="../../assets/js/app.js"></script>
+<script src="items.js"></script>
+<script src="confetti.js"></script>
+<script src="bingo.js"></script>
+</body>
+</html>
