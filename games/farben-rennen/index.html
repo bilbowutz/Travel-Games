@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Farben-Rennen – Travel Games</title>
 <meta name="description" content="Farben-Rennen fürs Handy: Jede:r bekommt eine Autofarbe und zählt mit. Wer zuerst am Ziel ist, gewinnt. Offline spielbar.">
-<meta name="theme-color" content="#2f6bff">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="../../manifest.webmanifest">
 <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
@@ -25,12 +26,12 @@
 <header class="hero">
   <div class="wrap">
     <div class="hero__bar">
-      <a class="back-link" href="../../">‹ Spiele</a>
+      <a class="back-link" href="../../"><span data-icon="chevron-left"></span>Spiele</a>
       <span class="spacer"></span>
-      <button type="button" class="icon-btn" id="theme-toggle">🌗</button>
-      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen">⚙️</button>
+      <button type="button" class="icon-btn" id="theme-toggle"></button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen" data-icon="gear"></button>
     </div>
-    <h1 class="hero__title">Farben-Rennen 🎨</h1>
+    <h1 class="hero__title">Farben-Rennen</h1>
     <p class="hero__sub">Jede:r bekommt eine Autofarbe. Wer sie sieht, tippt – wer zuerst am Ziel ist, gewinnt.</p>
   </div>
 </header>
@@ -81,8 +82,8 @@
     <button type="button" class="btn btn--primary" id="start-game">Farben verteilen</button>
   </div>
   <div class="actionbar__inner" id="play-actions" hidden>
-    <button type="button" class="btn" id="undo">↩ Rückgängig</button>
-    <button type="button" class="btn btn--primary" id="open-scores">🏆 Stand</button>
+    <button type="button" class="btn" id="undo">Rückgängig</button>
+    <button type="button" class="btn btn--primary" id="open-scores">Stand</button>
   </div>
 </div>
 
@@ -91,10 +92,10 @@
   <div class="sheet__inner">
     <div class="sheet__grip" aria-hidden="true"></div>
     <h2 id="scores-title">Zwischenstand</h2>
-    <ol class="score-list" id="score-list"></ol>
+    <ol class="list-group score-list" id="score-list"></ol>
     <div class="sheet__actions">
       <button type="button" class="btn btn--block btn--primary" id="close-scores">Weiterspielen</button>
-      <button type="button" class="btn btn--block" id="share-scores">🔗 Stand teilen</button>
+      <button type="button" class="btn btn--block" id="share-scores">Stand teilen</button>
       <button type="button" class="btn btn--block btn--ghost" id="new-round">Neue Runde</button>
     </div>
   </div>
@@ -121,8 +122,8 @@
       <p class="code-display" id="game-code">–</p>
       <p class="code-hint">Gleicher Code = gleiche Farbverteilung und dasselbe Ziel. Gezählt wird auf jedem Handy selbst.</p>
       <div class="sheet__actions">
-        <button type="button" class="btn btn--block" id="share-game">🔗 Rennen teilen</button>
-        <button type="button" class="btn btn--block" id="show-qr">📷 QR-Code zeigen</button>
+        <button type="button" class="btn btn--block" id="share-game">Rennen teilen</button>
+        <button type="button" class="btn btn--block" id="show-qr">QR-Code zeigen</button>
       </div>
       <form class="code-form" id="code-form">
         <label class="visually-hidden" for="code-input">Code eingeben</label>
@@ -136,7 +137,7 @@
       <span class="sheet__label">Mitspieler:innen</span>
       <p class="code-hint" id="player-summary">–</p>
       <div class="sheet__actions">
-        <button type="button" class="btn btn--block" id="redeal">🔀 Farben neu verteilen</button>
+        <button type="button" class="btn btn--block" id="redeal">Farben neu verteilen</button>
         <button type="button" class="btn btn--block" id="edit-players">Namen bearbeiten</button>
         <button type="button" class="btn btn--block btn--danger" id="reset-all">Zähler und Siege löschen</button>
       </div>

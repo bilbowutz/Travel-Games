@@ -8,45 +8,40 @@
       id: 'auto-bingo',
       name: 'Auto Bingo',
       emoji: '🚗',
-      description: 'Hake ab, was du unterwegs siehst – Flugzeug, Tankstelle, Hund …',
+      description: 'Abhaken, was du unterwegs siehst',
       href: 'games/auto-bingo/',
-      badge: 'Spielen',
       status: 'ready'
     },
     {
       id: 'kniffel',
       name: 'Kniffel',
       emoji: '🎲',
-      description: 'Der Würfelklassiker – zu sechst auf einem Handy, das Blatt rechnet mit.',
+      description: 'Der Würfelklassiker, bis zu sechs Leute',
       href: 'games/kniffel/',
-      badge: 'Spielen',
       status: 'ready'
     },
     {
       id: 'wer-wuerde-eher',
       name: 'Wer würde eher …?',
       emoji: '🤔',
-      description: '124 Fragen, alle zeigen gleichzeitig – Punkte für die Mehrheit.',
+      description: '124 Fragen für die ganze Familie',
       href: 'games/wer-wuerde-eher/',
-      badge: 'Spielen',
       status: 'ready'
     },
     {
       id: 'schiffe-versenken',
       name: 'Schiffe versenken',
       emoji: '⚓',
-      description: 'Zu zweit auf einem Handy – abwechselnd, mit Sichtschutz dazwischen.',
+      description: 'Zu zweit auf einem Handy',
       href: 'games/schiffe-versenken/',
-      badge: 'Spielen',
       status: 'ready'
     },
     {
       id: 'farben-rennen',
       name: 'Farben-Rennen',
       emoji: '🎨',
-      description: 'Jede:r bekommt eine Autofarbe – wer zuerst am Ziel ist, gewinnt.',
+      description: 'Autofarben zählen um die Wette',
       href: 'games/farben-rennen/',
-      badge: 'Spielen',
       status: 'ready'
     }
   ];

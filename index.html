@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Travel Games – Spiele für unterwegs</title>
 <meta name="description" content="Kleine Reisespiele fürs Handy: Auto Bingo und mehr. Offline spielbar, ohne Anmeldung, ohne Server.">
-<meta name="theme-color" content="#2f6bff">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
@@ -26,7 +27,7 @@
   <div class="wrap">
     <div class="hero__bar">
       <span class="spacer"></span>
-      <button type="button" class="icon-btn" id="theme-toggle">🌗</button>
+      <button type="button" class="icon-btn" id="theme-toggle"></button>
     </div>
     <h1 class="hero__title">Travel Games</h1>
     <p class="hero__sub">Kleine Spiele für lange Fahrten. Ohne Anmeldung, ohne Server – alles bleibt auf deinem Handy.</p>
@@ -35,7 +36,7 @@
 
 <main class="wrap">
   <h2 class="section-title">Spiele</h2>
-  <ul class="game-grid" id="game-grid"></ul>
+  <ul class="list-group game-list" id="game-list"></ul>
 
   <div class="note">
     <span class="note__icon" aria-hidden="true">📴</span>
@@ -57,29 +58,32 @@
 <script src="assets/js/games.js"></script>
 <script>
 (function () {
-  var grid = document.getElementById('game-grid');
+  var list = document.getElementById('game-list');
 
   TG.games.forEach(function (game) {
     var li = document.createElement('li');
-    var card = document.createElement('a');
+    var row = document.createElement('a');
 
-    card.className = 'game-card';
-    card.href = game.href;
+    row.className = 'game-row';
+    row.href = game.href;
 
-    card.innerHTML =
-      '<span class="game-card__emoji" aria-hidden="true"></span>' +
-      '<span class="game-card__name"></span>' +
-      '<span class="game-card__desc"></span>' +
-      '<span class="game-card__badge"></span>';
+    row.innerHTML =
+      '<span class="game-row__icon" aria-hidden="true"></span>' +
+      '<span class="game-row__text">' +
+        '<span class="game-row__name"></span>' +
+        '<span class="game-row__desc"></span>' +
+      '</span>' +
+      '<span class="game-row__chevron" aria-hidden="true" data-icon="chevron-right"></span>';
 
-    card.querySelector('.game-card__emoji').textContent = game.emoji;
-    card.querySelector('.game-card__name').textContent = game.name;
-    card.querySelector('.game-card__desc').textContent = game.description;
-    card.querySelector('.game-card__badge').textContent = game.badge;
+    row.querySelector('.game-row__icon').textContent = game.emoji;
+    row.querySelector('.game-row__name').textContent = game.name;
+    row.querySelector('.game-row__desc').textContent = game.description;
 
-    li.appendChild(card);
-    grid.appendChild(li);
+    li.appendChild(row);
+    list.appendChild(li);
   });
+
+  TG.applyIcons(list);
 
   TG.bindThemeToggle(document.getElementById('theme-toggle'));
   TG.registerServiceWorker('sw.js');

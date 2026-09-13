@@ -1,38 +1,37 @@
 /* Schiffe versenken – spielspezifische Styles */
 
 :root {
-  --sea: #dbeafe;
-  --sea-line: #bfdbfe;
-  --ship: #475569;
+  --sea: #e6eef8;
+  --sea-line: #d3e0ef;
+  --ship: #8e8e93;
   --ship-ink: #ffffff;
-  --hit: #dc2626;
-  --sunk: #7f1d1d;
-  --miss: #93a8c4;
+  --hit: #ff3b30;
+  --sunk: #b3261e;
+  --miss: #aeb6c2;
 }
 
 [data-theme="dark"] {
-  --sea: #16304d;
-  --sea-line: #1e3f66;
-  --ship: #94a3b8;
-  --ship-ink: #0d1117;
-  --hit: #ef4444;
-  --sunk: #b91c1c;
+  --sea: #1b2a3a;
+  --sea-line: #24384c;
+  --ship: #8e8e93;
+  --ship-ink: #000000;
+  --hit: #ff453a;
+  --sunk: #c0322a;
   --miss: #5b7392;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --sea: #16304d;
-    --sea-line: #1e3f66;
-    --ship: #94a3b8;
-    --ship-ink: #0d1117;
-    --hit: #ef4444;
-    --sunk: #b91c1c;
-    --miss: #5b7392;
+    --sea: #1b2a3a;
+    --sea-line: #24384c;
+    --ship: #8e8e93;
+    --ship-ink: #000000;
+    --hit: #ff453a;
+    --sunk: #c0322a;
+    --miss: #5b6675;
   }
 }
 
-.status { margin-top: -18px; }
 #turn-name, #place-title { font-size: 17px; overflow-wrap: anywhere; }
 
 .place-left,
@@ -140,21 +139,19 @@ button.sea-cell:active { transform: scale(.88); }
   gap: 8px;
   min-height: var(--tap);
   padding: 8px 14px;
-  border: 1.5px solid var(--border);
+  border: 0;
   border-radius: 999px;
   background: var(--surface);
   font-size: 14px;
-  font-weight: 700;
-  box-shadow: var(--shadow-sm);
-  transition: transform .12s ease, border-color .15s ease, background .15s ease;
+  font-weight: 600;
+  transition: transform .12s ease, background .15s ease;
 }
 
 .ship-chip:active { transform: scale(.95); }
 
 .ship-chip[aria-pressed="true"] {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--accent);
+  color: #fff;
 }
 
 .ship-chip__pips {
@@ -199,16 +196,15 @@ button.sea-cell:active { transform: scale(.88); }
   align-items: center;
   gap: 6px;
   padding: 5px 11px;
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: 999px;
   background: var(--surface);
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .fleet-status li.is-sunk {
-  border-color: var(--hit);
-  background: var(--found-soft);
+  background: var(--fill);
   color: var(--text-muted);
   text-decoration: line-through;
 }
@@ -224,7 +220,7 @@ button.sea-cell:active { transform: scale(.88); }
   display: grid;
   place-items: center;
   padding: 24px;
-  background: var(--bg-hero);
+  background: var(--accent);
   color: #fff;
   text-align: center;
 }
@@ -253,8 +249,7 @@ button.sea-cell:active { transform: scale(.88); }
 
 .curtain .btn--primary {
   background: #fff;
-  color: #1e3fae;
-  border-color: transparent;
+  color: var(--accent);
 }
 
 /* ---------- Schlussbild ---------- */

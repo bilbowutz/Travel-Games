@@ -1,6 +1,5 @@
 /* Kniffel – spielspezifische Styles */
 
-.status { margin-top: -18px; }
 #turn-name { font-size: 17px; overflow-wrap: anywhere; }
 
 /* ---------- Würfel ---------- */
@@ -20,11 +19,10 @@
   width: clamp(46px, 16vw, 68px);
   aspect-ratio: 1;
   padding: 0;
-  border: 1.5px solid var(--border);
-  border-radius: 15%;
+  border: 0;
+  border-radius: 22%;
   background: var(--surface);
-  box-shadow: var(--shadow-sm);
-  transition: transform .12s ease, border-color .15s ease, background .15s ease;
+  transition: transform .12s ease, background .15s ease;
 }
 
 .die:active { transform: scale(.93); }
@@ -32,8 +30,8 @@
 .die:disabled { opacity: .5; }
 
 .die.is-held {
-  border-color: var(--accent);
   background: var(--accent-soft);
+  box-shadow: 0 0 0 2px var(--accent) inset;
   transform: translateY(-4px);
 }
 
@@ -75,13 +73,11 @@
 
 /* ---------- Blatt ---------- */
 
-.score-list {
+.score-sheet {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
   margin: 20px 0 0;
-  padding: 0;
-  list-style: none;
 }
 
 .score-row {
@@ -90,12 +86,12 @@
   gap: 10px;
   width: 100%;
   min-height: 46px;
-  padding: 8px 14px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   text-align: left;
-  transition: transform .1s ease, border-color .15s ease, background .15s ease;
+  transition: transform .1s ease, background .15s ease;
 }
 
 button.score-row:active { transform: scale(.985); }
@@ -103,8 +99,8 @@ button.score-row:active { transform: scale(.985); }
 .score-row__name {
   flex: 1;
   min-width: 0;
-  font-size: 14.5px;
-  font-weight: 600;
+  font-size: 15.5px;
+  font-weight: 400;
   overflow-wrap: anywhere;
 }
 
@@ -120,10 +116,9 @@ button.score-row:active { transform: scale(.985); }
 }
 
 /* Schon eingetragen */
-.score-row.is-taken {
-  background: var(--surface-2);
-  border-style: dashed;
-}
+.score-row.is-taken { background: var(--fill); }
+
+.score-row.is-taken .score-row__value { background: transparent; }
 
 .score-row.is-taken .score-row__name { color: var(--text-muted); }
 .score-row.is-taken .score-row__value { color: var(--text); }
@@ -139,9 +134,7 @@ button.score-row:active { transform: scale(.985); }
   color: var(--text-muted);
 }
 
-.score-row.is-open.is-good {
-  border-color: var(--found);
-}
+
 
 .score-row.is-open.is-good .score-row__value {
   background: var(--found-soft);
@@ -153,15 +146,15 @@ button.score-row:active { transform: scale(.985); }
   color: var(--text-muted);
 }
 
-/* Zwischensummen */
+/* Zwischensummen zwischen den Gruppen */
 .score-sum {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 7px 14px;
+  padding: 2px 16px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--text-muted);
 }
 
@@ -171,39 +164,31 @@ button.score-row:active { transform: scale(.985); }
 }
 
 .score-sum--total {
-  margin-top: 4px;
-  padding: 12px 14px;
-  border-radius: var(--radius-sm);
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: 15px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 600;
 }
 
-.score-sum--total span:last-child { color: var(--accent); font-size: 19px; font-weight: 800; }
+.score-sum--total span:last-child { color: var(--text); font-size: 19px; font-weight: 600; }
 
 .score-sum--bonus.is-reached { color: var(--found); }
 
 /* ---------- Blätter-Übersicht und Endstand ---------- */
 
 .tally-list,
-.rank-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 18px 0 0;
-  padding: 0;
-  list-style: none;
-}
+.rank-list { margin: 18px 0 0; }
 
 .tally-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface-2);
-  font-weight: 600;
+  padding: 13px 16px;
+  border: 0;
+  background: transparent;
+  font-weight: 500;
 }
 
 .tally-row__rank { flex: none; width: 26px; font-size: 17px; text-align: center; }
@@ -226,11 +211,8 @@ button.score-row:active { transform: scale(.985); }
   text-align: right;
 }
 
-.tally-row--lead {
-  border-color: var(--gold);
-  background: var(--gold-soft);
-}
+.tally-row--lead { background: var(--gold-soft); }
 
 .tally-row--lead .tally-row__total { color: var(--gold); }
 
-.tally-row--current { border-color: var(--accent); }
+.tally-row--current { box-shadow: 0 0 0 1.5px var(--accent) inset; }

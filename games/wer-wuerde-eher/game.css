@@ -7,29 +7,28 @@
   flex-direction: column;
   justify-content: center;
   gap: 12px;
-  min-height: 190px;
-  margin-top: 18px;
-  padding: 26px 22px;
+  min-height: 180px;
+  margin-top: 14px;
+  padding: 28px 22px;
   border-radius: var(--radius);
-  background: var(--bg-hero);
-  color: #fff;
-  box-shadow: var(--shadow-md);
+  background: var(--surface);
+  color: var(--text);
   text-align: center;
 }
 
 .question-card__lead {
   font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .1em;
+  font-weight: 500;
+  letter-spacing: .06em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, .75);
+  color: var(--accent);
 }
 
 .question-card__text {
   font-size: clamp(21px, 6vw, 28px);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.25;
-  letter-spacing: -.015em;
+  letter-spacing: -.022em;
   hyphens: auto;
   -webkit-hyphens: auto;
 }
@@ -66,19 +65,16 @@
   width: 100%;
   min-height: 58px;
   padding: 12px 14px;
-  border: 1.5px solid var(--border);
+  border: 0;
   border-radius: var(--radius-sm);
   background: var(--surface);
-  box-shadow: var(--shadow-sm);
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   text-align: left;
-  transition: transform .12s ease, border-color .15s ease, background .15s ease;
+  transition: transform .12s ease, background .15s ease;
 }
 
-.player-btn:active {
-  transform: scale(.96);
-  border-color: var(--accent);
-}
+.player-btn:active { transform: scale(.97); background: var(--fill); }
 
 .player-btn__name {
   min-width: 0;
@@ -93,15 +89,15 @@
   min-width: 30px;
   padding: 3px 9px;
   border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--fill);
+  color: var(--text-muted);
   font-size: 13px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   text-align: center;
 }
 
 .player-btn.is-awarded {
-  border-color: var(--found);
   background: var(--found-soft);
   animation: award-pop .34s ease;
 }
@@ -120,12 +116,7 @@
 /* ---------- Punktestand ---------- */
 
 .score-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   margin: 18px 0 0;
-  padding: 0;
-  list-style: none;
   counter-reset: rank;
 }
 
@@ -133,11 +124,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface-2);
-  font-weight: 600;
+  padding: 13px 16px;
+  border: 0;
+  background: transparent;
+  font-weight: 500;
 }
 
 .score-row__rank {
@@ -160,9 +150,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.score-row--lead {
-  border-color: var(--gold);
-  background: var(--gold-soft);
-}
+.score-row--lead { background: var(--gold-soft); }
 
 .score-row--lead .score-row__points { color: var(--gold); }

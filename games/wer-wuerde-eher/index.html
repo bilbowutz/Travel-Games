@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Wer würde eher …? – Travel Games</title>
 <meta name="description" content="Wer würde eher …? – das Familienspiel für unterwegs. 124 Fragen, Punkte für alle, offline spielbar und ohne Anmeldung.">
-<meta name="theme-color" content="#2f6bff">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="../../manifest.webmanifest">
 <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
@@ -25,12 +26,12 @@
 <header class="hero">
   <div class="wrap">
     <div class="hero__bar">
-      <a class="back-link" href="../../">‹ Spiele</a>
+      <a class="back-link" href="../../"><span data-icon="chevron-left"></span>Spiele</a>
       <span class="spacer"></span>
-      <button type="button" class="icon-btn" id="theme-toggle">🌗</button>
-      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen">⚙️</button>
+      <button type="button" class="icon-btn" id="theme-toggle"></button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen" data-icon="gear"></button>
     </div>
-    <h1 class="hero__title">Wer würde eher …? 🤔</h1>
+    <h1 class="hero__title">Wer würde eher …?</h1>
     <p class="hero__sub">Vorlesen, alle zeigen gleichzeitig – wer die meisten Finger abbekommt, kriegt den Punkt.</p>
   </div>
 </header>
@@ -86,7 +87,7 @@
     <button type="button" class="btn btn--primary" id="start-game">Los geht’s</button>
   </div>
   <div class="actionbar__inner" id="play-actions" hidden>
-    <button type="button" class="btn" id="open-scores">🏆 Stand</button>
+    <button type="button" class="btn" id="open-scores">Stand</button>
     <button type="button" class="btn btn--primary" id="next-question">Weiter →</button>
   </div>
 </div>
@@ -96,10 +97,10 @@
   <div class="sheet__inner">
     <div class="sheet__grip" aria-hidden="true"></div>
     <h2 id="scores-title">Punktestand</h2>
-    <ol class="score-list" id="score-list"></ol>
+    <ol class="list-group score-list" id="score-list"></ol>
     <div class="sheet__actions">
       <button type="button" class="btn btn--block btn--primary" id="close-scores">Weiterspielen</button>
-      <button type="button" class="btn btn--block" id="share-scores">🔗 Punktestand teilen</button>
+      <button type="button" class="btn btn--block" id="share-scores">Punktestand teilen</button>
       <button type="button" class="btn btn--block btn--ghost" id="new-round">Neue Runde starten</button>
     </div>
   </div>
@@ -116,8 +117,8 @@
       <p class="code-display" id="game-code">–</p>
       <p class="code-hint">Gleicher Code = gleiche Fragen in gleicher Reihenfolge. Punkte zählt jedes Handy für sich.</p>
       <div class="sheet__actions">
-        <button type="button" class="btn btn--block" id="share-game">🔗 Fragenrunde teilen</button>
-        <button type="button" class="btn btn--block" id="show-qr">📷 QR-Code zeigen</button>
+        <button type="button" class="btn btn--block" id="share-game">Fragenrunde teilen</button>
+        <button type="button" class="btn btn--block" id="show-qr">QR-Code zeigen</button>
       </div>
       <form class="code-form" id="code-form">
         <label class="visually-hidden" for="code-input">Code eingeben</label>

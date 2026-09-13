@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Auto Bingo – Travel Games</title>
 <meta name="description" content="Auto Bingo fürs Handy: Kacheln abhaken, was du unterwegs siehst – Flugzeug, Tankstelle, Hund und mehr. Offline spielbar.">
-<meta name="theme-color" content="#2f6bff">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="../../manifest.webmanifest">
 <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
@@ -25,12 +26,12 @@
 <header class="hero">
   <div class="wrap">
     <div class="hero__bar">
-      <a class="back-link" href="../../">‹ Spiele</a>
+      <a class="back-link" href="../../"><span data-icon="chevron-left"></span>Spiele</a>
       <span class="spacer"></span>
-      <button type="button" class="icon-btn" id="theme-toggle">🌗</button>
-      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen">⚙️</button>
+      <button type="button" class="icon-btn" id="theme-toggle"></button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen" data-icon="gear"></button>
     </div>
-    <h1 class="hero__title">Auto Bingo 🚗</h1>
+    <h1 class="hero__title">Auto Bingo</h1>
     <p class="hero__sub">Tippe an, was du unterwegs entdeckst. Eine volle Reihe = Bingo!</p>
   </div>
 </header>
@@ -67,7 +68,7 @@
 
 <div class="actionbar">
   <div class="actionbar__inner">
-    <button type="button" class="btn btn--primary" id="new-game">🔀 Neues Spiel</button>
+    <button type="button" class="btn btn--primary" id="new-game">Neues Spiel</button>
   </div>
 </div>
 
@@ -91,9 +92,9 @@
       <p class="code-display" id="board-code">–</p>
       <p class="code-hint">Gleicher Code = gleiches Brett. Abgehakt wird auf jedem Handy selbst.</p>
       <div class="sheet__actions">
-        <button type="button" class="btn btn--block" id="share-board">🔗 Brett teilen</button>
-        <button type="button" class="btn btn--block" id="show-qr">📷 QR-Code zeigen</button>
-        <button type="button" class="btn btn--block" id="share-result">🏆 Ergebnis teilen</button>
+        <button type="button" class="btn btn--block" id="share-board">Brett teilen</button>
+        <button type="button" class="btn btn--block" id="show-qr">QR-Code zeigen</button>
+        <button type="button" class="btn btn--block" id="share-result">Ergebnis teilen</button>
       </div>
       <form class="code-form" id="code-form">
         <label class="visually-hidden" for="code-input">Code eingeben</label>

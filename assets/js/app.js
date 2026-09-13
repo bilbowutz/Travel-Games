@@ -55,6 +55,35 @@
     }
   };
 
+  /* ---------- Symbole ---------- */
+
+  /* Einfache Strichsymbole statt Emoji – ruhiger und in beiden Farbschemata gleich gut. */
+  var SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+
+  TG.icons = {
+    'chevron-left': SVG + '<path d="M15 5 8 12l7 7"/></svg>',
+
+    'chevron-right': SVG + '<path d="m9 5 7 7-7 7"/></svg>',
+
+    gear: SVG + '<circle cx="12" cy="12" r="3.2"/><path d="M19.9 14.4a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1h.2a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+
+    sun: SVG + '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2.5 12h2M19.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>',
+
+    moon: SVG + '<path d="M20 14.3A8.2 8.2 0 0 1 9.7 4 8.5 8.5 0 1 0 20 14.3z"/></svg>',
+
+    'theme-auto': SVG + '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none"/></svg>'
+  };
+
+  /* Füllt alle Platzhalter mit data-icon. */
+  TG.applyIcons = function (root) {
+    var scope = root || document;
+    Array.prototype.forEach.call(scope.querySelectorAll('[data-icon]'), function (element) {
+      var svg = TG.icons[element.getAttribute('data-icon')];
+      if (svg) element.innerHTML = svg;
+    });
+  };
+
   /* ---------- Farbschema: auto | light | dark ---------- */
 
   TG.theme = {
@@ -79,7 +108,7 @@
       return { auto: 'Automatisch', light: 'Hell', dark: 'Dunkel' }[mode] || 'Automatisch';
     },
     icon: function (mode) {
-      return { auto: '🌗', light: '☀️', dark: '🌙' }[mode] || '🌗';
+      return { auto: 'theme-auto', light: 'sun', dark: 'moon' }[mode] || 'theme-auto';
     }
   };
 
@@ -88,7 +117,7 @@
     if (!button) return;
     function render() {
       var mode = TG.theme.get();
-      button.textContent = TG.theme.icon(mode);
+      button.innerHTML = TG.icons[TG.theme.icon(mode)] || '';
       button.setAttribute('aria-label', 'Farbschema: ' + TG.theme.label(mode) + ' – umschalten');
       button.title = 'Farbschema: ' + TG.theme.label(mode);
     }
@@ -476,4 +505,5 @@
 
   TG.theme.apply(TG.theme.get());
   TG.trackViewportBottom();
+  TG.applyIcons();
 })(window, document);

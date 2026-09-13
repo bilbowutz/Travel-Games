@@ -26,6 +26,8 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
 - 📴 Offline spielbar über einen Service Worker (ideal im Funkloch)
 - 🏠 Als PWA installierbar („Zum Home-Bildschirm hinzufügen")
 - 🌗 Hell/Dunkel/Automatisch, folgt auf Wunsch dem System
+- 🍎 Oberfläche im iOS-Stil: Systemfarben, große Überschriften,
+  gruppierte Listen mit Haarlinien statt bunter Karten
 - 🎉 Konfetti, Haptik und Fortschrittsanzeige
 - ⚙️ Keine Abhängigkeiten, kein Build-Schritt – reines HTML/CSS/JS
 
@@ -90,7 +92,8 @@ index.html                  Startseite mit den Spiele-Kacheln
 manifest.webmanifest        PWA-Manifest
 sw.js                       Service Worker (Offline-Cache)
 assets/
-  css/base.css              Design-System: Farbtokens, Buttons, Statuszeile,
+  css/base.css              Design-System: Farbtokens (Apples Systempalette),
+                            Buttons, gruppierte Listen, Statuszeile,
                             Aktionsleiste, Bottom-Sheets, Code-Anzeige, Toasts
   js/app.js                 Speicher, Farbschema, Toasts, Haptik,
                             Seed-Zufall, Codes, Teilen

@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Schiffe versenken – Travel Games</title>
 <meta name="description" content="Schiffe versenken für unterwegs: zu zweit auf einem Handy, abwechselnd. Offline spielbar, ohne Anmeldung.">
-<meta name="theme-color" content="#2f6bff">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="../../manifest.webmanifest">
 <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
@@ -25,12 +26,12 @@
 <header class="hero">
   <div class="wrap">
     <div class="hero__bar">
-      <a class="back-link" href="../../">‹ Spiele</a>
+      <a class="back-link" href="../../"><span data-icon="chevron-left"></span>Spiele</a>
       <span class="spacer"></span>
-      <button type="button" class="icon-btn" id="theme-toggle">🌗</button>
-      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen">⚙️</button>
+      <button type="button" class="icon-btn" id="theme-toggle"></button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen" data-icon="gear"></button>
     </div>
-    <h1 class="hero__title">Schiffe versenken ⚓</h1>
+    <h1 class="hero__title">Schiffe versenken</h1>
     <p class="hero__sub" id="hero-sub">Zu zweit auf einem Handy. Es wird reihum weitergereicht – wer nicht dran ist, schaut weg.</p>
   </div>
 </header>
@@ -69,8 +70,8 @@
     </div>
 
     <div class="segmented" role="group" aria-label="Ansicht" id="view-picker">
-      <button type="button" data-view="shots" aria-pressed="true">🎯 Schüsse</button>
-      <button type="button" data-view="own" aria-pressed="false">🚢 Meine Flotte</button>
+      <button type="button" data-view="shots" aria-pressed="true">Schüsse</button>
+      <button type="button" data-view="own" aria-pressed="false">Meine Flotte</button>
     </div>
 
     <div class="grid-wrap" id="shots-view">
@@ -123,7 +124,7 @@
     <button type="button" class="btn btn--primary" id="start-game">Los geht’s</button>
   </div>
   <div class="actionbar__inner" id="place-actions" hidden>
-    <button type="button" class="btn" id="shuffle-fleet">🎲 Würfeln</button>
+    <button type="button" class="btn" id="shuffle-fleet">Würfeln</button>
     <button type="button" class="btn" id="rotate-ship" aria-pressed="false">↻ Quer</button>
     <button type="button" class="btn btn--primary" id="place-done">Fertig →</button>
   </div>

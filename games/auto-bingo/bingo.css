@@ -27,15 +27,14 @@
   aspect-ratio: 1;
   width: 100%;
   padding: 3%;
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
+  border: 0;
+  border-radius: 12px;
   background: var(--surface);
-  box-shadow: var(--shadow-sm);
   text-align: center;
   overflow: hidden;
   -webkit-user-select: none;
   user-select: none;
-  transition: transform .12s ease, background .18s ease, border-color .18s ease;
+  transition: transform .12s ease, background .18s ease;
 }
 
 .tile:active { transform: scale(.94); }
@@ -71,7 +70,7 @@
 
 .tile.is-checked {
   background: var(--found-soft);
-  border-color: var(--found);
+  box-shadow: 0 0 0 1.5px var(--found) inset;
 }
 
 .tile.is-checked .tile__label { color: var(--found); }
@@ -112,19 +111,16 @@
 
 /* Teil einer fertigen Bingo-Reihe */
 
-.tile.is-line {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 2px var(--gold) inset, var(--shadow-sm);
-}
+.tile.is-line { box-shadow: 0 0 0 2px var(--gold) inset; }
 
 /* Joker in der Mitte */
 
 .tile--free {
   background: var(--gold-soft);
-  border-color: var(--gold);
+  box-shadow: 0 0 0 1.5px var(--gold) inset;
   cursor: default;
 }
 
 .tile--free .tile__label { color: var(--gold); }
 .tile--free:active { transform: none; }
-.tile--free .tile__check { background: var(--gold); color: #131823; }
+.tile--free .tile__check { background: var(--gold); color: #fff; }

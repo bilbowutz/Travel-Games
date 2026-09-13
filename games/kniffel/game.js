@@ -278,7 +278,7 @@
   }
 
   function sumRow(label, value, extraClass) {
-    var item = document.createElement('li');
+    var item = document.createElement('div');
     item.className = 'score-sum ' + (extraClass || '');
     var left = document.createElement('span');
     left.textContent = label;
@@ -295,8 +295,15 @@
 
     el.scoreList.textContent = '';
 
-    K.CATEGORIES.filter(function (c) { return c.section === 'upper'; })
-      .forEach(function (category) { el.scoreList.appendChild(scoreRow(category, player)); });
+    function group(section) {
+      var list = document.createElement('ul');
+      list.className = 'list-group';
+      K.CATEGORIES.filter(function (c) { return c.section === section; })
+        .forEach(function (category) { list.appendChild(scoreRow(category, player)); });
+      return list;
+    }
+
+    el.scoreList.appendChild(group('upper'));
 
     el.scoreList.appendChild(sumRow('Zwischensumme', String(totals.upper)));
     el.scoreList.appendChild(sumRow(
@@ -305,8 +312,7 @@
       totals.bonus ? 'score-sum--bonus is-reached' : 'score-sum--bonus'
     ));
 
-    K.CATEGORIES.filter(function (c) { return c.section === 'lower'; })
-      .forEach(function (category) { el.scoreList.appendChild(scoreRow(category, player)); });
+    el.scoreList.appendChild(group('lower'));
 
     if (player.sheet.kniffelBonus) {
       el.scoreList.appendChild(sumRow('Kniffel-Bonus', '+' + player.sheet.kniffelBonus));
@@ -323,8 +329,8 @@
 
     el.rollDice.disabled = state.rollsLeft === 0;
     el.rollDice.textContent = state.rollsLeft === ROLLS_PER_TURN
-      ? '🎲 Würfeln'
-      : (state.rollsLeft > 0 ? '🎲 Nochmal (' + state.rollsLeft + ')' : '🎲 Keine Würfe mehr');
+      ? 'Würfeln'
+      : (state.rollsLeft > 0 ? 'Nochmal (' + state.rollsLeft + ')' : 'Keine Würfe mehr');
 
     renderDice(animate);
     renderHint();
