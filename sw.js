@@ -1,6 +1,6 @@
 /* Offline-Cache für Travel Games.
    CACHE hochzählen, wenn sich Dateien geändert haben. */
-const CACHE = 'travel-games-v19';
+const CACHE = 'travel-games-v20';
 
 const PRECACHE = [
   './',
@@ -17,6 +17,7 @@ const PRECACHE = [
   './assets/img/favicon.svg',
   './assets/img/icon-192.png',
   './assets/img/icon-512.png',
+  './assets/img/icon-maskable-512.png',
   './assets/img/apple-touch-icon.png',
   './games/auto-bingo/',
   './games/auto-bingo/index.html',
