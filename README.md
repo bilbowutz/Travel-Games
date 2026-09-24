@@ -13,7 +13,9 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
   wer zuerst das Ziel erreicht, gewinnt die Runde.
 - **Schiffe versenken** – zu zweit auf einem Handy, abwechselnd. Zwischen den
   Zügen schiebt sich ein Sichtschutz davor, damit niemand die gegnerische
-  Flotte sieht.
+  Flotte sieht. Beim Aufstellen liegt die Flotte schon fertig da: Schiff
+  antippen, aufs Wasser tippen zum Verschieben, nochmal aufs Schiff zum
+  Drehen – die übrigen Schiffe weichen von selbst aus.
 - **Mäxchen** – würfeln, ansagen, bluffen. Nur wer dran ist, sieht den Wurf:
   das Handy übernimmt die Rolle des Würfelbechers.
 - **Kniffel** – der Würfelklassiker für zwei bis sechs, alle auf einem Gerät.

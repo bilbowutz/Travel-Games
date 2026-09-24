@@ -58,7 +58,7 @@
       <div class="sea-grid" id="place-grid" role="group" aria-label="Eigenes Spielfeld"></div>
     </div>
 
-    <p class="place-hint" id="place-hint">Tippe ein Schiff an, um es zu versetzen.</p>
+    <p class="place-hint" id="place-hint">Tippe ein Schiff an und schieb es zurecht.</p>
     <ul class="ship-chips" id="ship-chips"></ul>
   </section>
 
@@ -109,6 +109,7 @@
     <summary>So wird gespielt</summary>
     <ul>
       <li>Jede:r stellt seine Flotte auf, ohne dass der andere zuschaut.</li>
+      <li>Beim Aufstellen liegt die Flotte schon fertig da: Schiff antippen, aufs Wasser tippen zum Verschieben, nochmal aufs Schiff tippen zum Drehen.</li>
       <li>Abwechselnd auf ein Feld des gegnerischen Rasters tippen.</li>
       <li><strong>Treffer? Nochmal!</strong> Erst bei Wasser ist der andere dran.</li>
       <li>Schiffe dürfen sich nicht berühren, auch nicht über Eck.</li>
@@ -125,7 +126,7 @@
   </div>
   <div class="actionbar__inner" id="place-actions" hidden>
     <button type="button" class="btn" id="shuffle-fleet">Würfeln</button>
-    <button type="button" class="btn" id="rotate-ship" aria-pressed="false">↻ Quer</button>
+    <button type="button" class="btn" id="rotate-ship">Drehen</button>
     <button type="button" class="btn btn--primary" id="place-done">Fertig →</button>
   </div>
   <div class="actionbar__inner" id="over-actions" hidden>

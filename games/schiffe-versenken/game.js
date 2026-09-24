@@ -67,6 +67,7 @@
 
   var state = null;
   var selectedShipId = null;
+  var hintOverride = null;
 
   var roster = TG.nameEditor(el.nameList, { min: 2, max: 2, maxLength: 14 });
 
@@ -189,42 +190,196 @@
 
   /* ---------------- Aufstellen ---------------- */
 
+  /* Auf dem Brett liegt immer die komplette Flotte. Man wählt ein Schiff und
+     schiebt es herum – nichts muss erst "abgelegt" werden, und "Fertig" ist
+     nie gesperrt. */
+
   function startPlacing(index) {
     state.phase = 'place';
     state.placing = index;
-    state.draft = { player: index, placements: B.randomFleet(), horizontal: true };
-    selectedShipId = null;
+    state.draft = { player: index, placements: B.randomFleet() };
+    selectedShipId = B.FLEET[0].id;
     save();
   }
 
-  function placedIds() {
-    return state.draft.placements.map(function (p) { return p.shipId; });
+  function shipInfo(id) {
+    for (var i = 0; i < B.FLEET.length; i++) if (B.FLEET[i].id === id) return B.FLEET[i];
+    return null;
+  }
+
+  function placementOf(id) {
+    var list = state.draft.placements;
+    for (var i = 0; i < list.length; i++) if (list[i].shipId === id) return list[i];
+    return null;
+  }
+
+  function withoutShip(id) {
+    return state.draft.placements.filter(function (p) { return p.shipId !== id; });
+  }
+
+  function replacePlacement(spot) {
+    state.draft.placements = state.draft.placements.map(function (p) {
+      return p.shipId === spot.shipId ? spot : p;
+    });
+  }
+
+  /* Sucht den freundlichsten Platz für ein Schiff: am liebsten so, dass es das
+     angetippte Feld bedeckt und dabei möglichst mittig darauf liegt. Geht das
+     nicht, rutscht es aufs nächstgelegene freie Stück Wasser. Dadurch landet
+     jeder Tipp irgendwo – auch am Rand und dicht neben anderen Schiffen. */
+  function bestSpot(others, shipId, horizontal, tx, ty) {
+    var ship = shipInfo(shipId);
+    if (!ship) return null;
+
+    var span = ship.size - 1;
+    var maxX = horizontal ? SIZE - ship.size : SIZE - 1;
+    var maxY = horizontal ? SIZE - 1 : SIZE - ship.size;
+    var best = null;
+    var bestCost = Infinity;
+
+    for (var y = 0; y <= maxY; y++) {
+      for (var x = 0; x <= maxX; x++) {
+        var candidate = { shipId: shipId, x: x, y: y, horizontal: horizontal };
+        if (!B.checkPlacements(others.concat([candidate])).ok) continue;
+
+        var cells = B.cellsFor(candidate);
+        var near = Infinity;
+        for (var i = 0; i < cells.length; i++) {
+          var distance = Math.abs(cells[i][0] - tx) + Math.abs(cells[i][1] - ty);
+          if (distance < near) near = distance;
+        }
+
+        var midX = x + (horizontal ? span / 2 : 0);
+        var midY = y + (horizontal ? 0 : span / 2);
+        /* Erst: bedeckt es das Feld überhaupt? Dann: wie mittig liegt es? */
+        var cost = near * 100 + Math.abs(midX - tx) + Math.abs(midY - ty);
+
+        if (cost < bestCost) { bestCost = cost; best = candidate; }
+      }
+    }
+
+    return best;
+  }
+
+  /* Das ausgewählte Schiff hat Vorfahrt: es landet da, wo getippt wurde, und
+     schiebt die anderen beiseite. Ohne das wäre auf dem engen Feld – Schiffe
+     dürfen sich ja nicht einmal über Eck berühren – gut die Hälfte aller
+     Felder unerreichbar, und jeder zweite Tipp liefe ins Leere. */
+  function placeCovering(shipId, horizontal, tx, ty) {
+    var ship = shipInfo(shipId);
+    var others = withoutShip(shipId);
+    var span = ship.size - 1;
+    var candidates = [];
+    var i;
+
+    for (i = 0; i < ship.size; i++) {
+      var x = horizontal ? tx - i : tx;
+      var y = horizontal ? ty : ty - i;
+      if (x < 0 || y < 0) continue;
+      if (horizontal ? x + span >= SIZE : y + span >= SIZE) continue;
+
+      var spot = { shipId: shipId, x: x, y: y, horizontal: horizontal };
+      candidates.push({
+        spot: spot,
+        pushed: others.filter(function (p) { return !B.checkPlacements([spot, p]).ok; }),
+        offCentre: Math.abs(i - span / 2)
+      });
+    }
+
+    /* Am liebsten so, dass niemand weichen muss – und möglichst mittig. */
+    candidates.sort(function (a, b) {
+      return (a.pushed.length - b.pushed.length) || (a.offCentre - b.offCentre);
+    });
+
+    for (i = 0; i < candidates.length; i++) {
+      var fleet = resettle(candidates[i]);
+      if (fleet && B.validateFleet(fleet).ok) return fleet;
+    }
+
+    return null;
+  }
+
+  /* Verdrängte Schiffe suchen sich den nächstgelegenen freien Platz. */
+  function resettle(candidate) {
+    var settled = [candidate.spot];
+    var pushedIds = candidate.pushed.map(function (p) { return p.shipId; });
+
+    state.draft.placements.forEach(function (p) {
+      if (p.shipId === candidate.spot.shipId) return;
+      if (pushedIds.indexOf(p.shipId) > -1) return;
+      settled.push(p);
+    });
+
+    /* Die großen zuerst – für die wird es sonst am ehesten eng. */
+    var queue = candidate.pushed.slice().sort(function (a, b) {
+      return shipInfo(b.shipId).size - shipInfo(a.shipId).size;
+    });
+
+    for (var i = 0; i < queue.length; i++) {
+      var cells = B.cellsFor(queue[i]);
+      var mid = cells[Math.floor((cells.length - 1) / 2)];
+      var spot = bestSpot(settled, queue[i].shipId, queue[i].horizontal, mid[0], mid[1]) ||
+        bestSpot(settled, queue[i].shipId, !queue[i].horizontal, mid[0], mid[1]);
+      if (!spot) return null;
+      settled.push(spot);
+    }
+
+    return B.FLEET.map(function (ship) {
+      for (var j = 0; j < settled.length; j++) if (settled[j].shipId === ship.id) return settled[j];
+      return null;
+    });
+  }
+
+  /* Ältere Spielstände können eine halb gesetzte Flotte enthalten. */
+  function completeFleet() {
+    var draft = state.draft;
+    draft.placements = (draft.placements || []).filter(function (p) {
+      return p && shipInfo(p.shipId);
+    });
+
+    for (var i = 0; i < B.FLEET.length; i++) {
+      var id = B.FLEET[i].id;
+      if (placementOf(id)) continue;
+      var spot = bestSpot(withoutShip(id), id, true, 4, 4) ||
+        bestSpot(withoutShip(id), id, false, 4, 4);
+      if (!spot) { draft.placements = B.randomFleet(); return; }
+      draft.placements = draft.placements.concat([spot]);
+    }
+
+    if (!B.validateFleet(draft.placements).ok) draft.placements = B.randomFleet();
+  }
+
+  function ensureSelection() {
+    if (!selectedShipId || !placementOf(selectedShipId)) selectedShipId = B.FLEET[0].id;
   }
 
   function renderPlace() {
+    completeFleet();
+    ensureSelection();
+
     var draft = state.draft;
-    var placed = placedIds();
-    var missing = B.FLEET.filter(function (ship) { return placed.indexOf(ship.id) < 0; });
+    var selected = shipInfo(selectedShipId);
 
     el.placeTitle.textContent = playerName(state.placing) + ' stellt auf';
-    el.placeLeft.textContent = missing.length
-      ? missing.length + ' Schiff' + (missing.length === 1 ? '' : 'e') + ' übrig'
-      : 'Flotte vollständig';
+    el.placeLeft.textContent = 'Alle fünf liegen schon';
 
-    el.placeHint.textContent = selectedShipId
-      ? 'Tippe auf ein freies Feld – dort beginnt das Schiff.'
-      : (missing.length
-        ? 'Tippe unten ein Schiff an und setze es aufs Raster.'
-        : 'Tippe ein Schiff im Raster an, um es zu versetzen.');
+    el.placeHint.classList.remove('is-warn');
+    el.placeHint.textContent = hintOverride ||
+      (selected.name + ': aufs Wasser tippen zum Verschieben, aufs Schiff zum Drehen.');
+    hintOverride = null;
 
     var ships = cellMap(draft.placements);
+    var mine = cellMap([placementOf(selectedShipId)]);
 
     buildGrid(el.placeGrid, function (x, y) {
-      return { classes: ships[x + ',' + y] ? ['is-ship'] : [] };
+      var key = x + ',' + y;
+      if (mine[key]) return { classes: ['is-ship', 'is-selected'], label: B.coordLabel(x, y) + ' – ' + selected.name };
+      if (ships[key]) return { classes: ['is-ship'], label: B.coordLabel(x, y) + ' – ' + shipInfo(ships[key]).name };
+      return { classes: [], label: B.coordLabel(x, y) + ' – Wasser' };
     }, onPlaceCell);
 
     el.shipChips.textContent = '';
-    missing.forEach(function (ship) {
+    B.FLEET.forEach(function (ship) {
       var item = document.createElement('li');
       var chip = document.createElement('button');
       chip.type = 'button';
@@ -232,13 +387,13 @@
       chip.dataset.ship = ship.id;
       chip.setAttribute('aria-pressed', selectedShipId === ship.id ? 'true' : 'false');
 
+      var label = document.createElement('span');
+      label.textContent = ship.name;
+
       var pips = document.createElement('span');
       pips.className = 'ship-chip__pips';
       pips.setAttribute('aria-hidden', 'true');
       for (var i = 0; i < ship.size; i++) pips.appendChild(document.createElement('i'));
-
-      var label = document.createElement('span');
-      label.textContent = ship.name;
 
       chip.appendChild(label);
       chip.appendChild(pips);
@@ -246,53 +401,80 @@
       el.shipChips.appendChild(item);
     });
 
-    el.rotateShip.textContent = draft.horizontal ? '↻ Quer' : '↻ Hoch';
-    el.rotateShip.setAttribute('aria-pressed', draft.horizontal ? 'false' : 'true');
-    el.placeDone.disabled = missing.length > 0;
+    /* Das gewählte Schiff soll in der Wischreihe sichtbar bleiben. */
+    var picked = el.shipChips.querySelector('.ship-chip[aria-pressed="true"]');
+    if (picked) {
+      var row = picked.parentNode;
+      el.shipChips.scrollLeft = row.offsetLeft - (el.shipChips.clientWidth - row.offsetWidth) / 2;
+    }
+
+    el.placeDone.disabled = !B.validateFleet(draft.placements).ok;
   }
 
-  function onPlaceCell(x, y) {
-    var draft = state.draft;
-    var ships = cellMap(draft.placements);
-    var hitShipId = ships[x + ',' + y];
+  /* Meldungen beim Aufstellen laufen über die feste Hinweiszeile – ein Tipp
+     daneben soll nicht gleich ein Fenster aufpoppen lassen. */
+  function flashHint(message) {
+    hintOverride = message;
+    renderPlace();
+    void el.placeHint.offsetWidth;
+    el.placeHint.classList.add('is-warn');
+    TG.haptic(20);
+  }
 
-    if (hitShipId) {
-      /* Schiff wieder aufnehmen */
-      draft.placements = draft.placements.filter(function (p) { return p.shipId !== hitShipId; });
-      selectedShipId = hitShipId;
-      TG.haptic(8);
-      save();
-      renderPlace();
-      return;
+  function selectShip(id) {
+    selectedShipId = id;
+    TG.haptic(6);
+    renderPlace();
+  }
+
+  /* Setzt das ausgewählte Schiff um – notfalls weicht es aufs nächste
+     freie Wasser aus, statt den Tipp zu verschlucken. */
+  function moveTo(horizontal, tx, ty, mayFlip, failure) {
+    var fleet = placeCovering(selectedShipId, horizontal, tx, ty) ||
+      (mayFlip ? placeCovering(selectedShipId, !horizontal, tx, ty) : null);
+
+    if (fleet) {
+      state.draft.placements = fleet;
+    } else {
+      var spot = bestSpot(withoutShip(selectedShipId), selectedShipId, horizontal, tx, ty);
+      if (!spot) { flashHint(failure); return; }
+      replacePlacement(spot);
     }
 
-    if (!selectedShipId) {
-      var missing = B.FLEET.filter(function (ship) { return placedIds().indexOf(ship.id) < 0; });
-      if (!missing.length) {
-        TG.toast('Alle Schiffe stehen. Tippe eins an, um es zu versetzen.');
-        return;
-      }
-      selectedShipId = missing[0].id;
-    }
-
-    var candidate = { shipId: selectedShipId, x: x, y: y, horizontal: draft.horizontal };
-    var check = B.checkPlacements(draft.placements.concat([candidate]));
-
-    if (!check.ok) {
-      TG.toast(check.error);
-      return;
-    }
-
-    draft.placements.push(candidate);
-    selectedShipId = null;
     TG.haptic(10);
     save();
     renderPlace();
   }
 
+  function rotateSelected() {
+    ensureSelection();
+    var current = placementOf(selectedShipId);
+    var ship = shipInfo(selectedShipId);
+    var cells = B.cellsFor(current);
+    var pivot = cells[Math.floor((ship.size - 1) / 2)];
+    moveTo(!current.horizontal, pivot[0], pivot[1], false, 'Das ' + ship.name + ' lässt sich hier nicht drehen.');
+  }
+
+  function moveSelected(x, y) {
+    ensureSelection();
+    var current = placementOf(selectedShipId);
+    moveTo(current.horizontal, x, y, true, 'Für das ' + shipInfo(selectedShipId).name + ' ist gerade nirgends Platz.');
+  }
+
+  function onPlaceCell(x, y) {
+    ensureSelection();
+    var ships = cellMap(state.draft.placements);
+    var hitShipId = ships[x + ',' + y];
+
+    if (hitShipId && hitShipId !== selectedShipId) { selectShip(hitShipId); return; }
+    if (hitShipId) { rotateSelected(); return; }
+
+    moveSelected(x, y);
+  }
+
   function finishPlacing() {
     var check = B.validateFleet(state.draft.placements);
-    if (!check.ok) { TG.toast(check.error); return; }
+    if (!check.ok) { flashHint(check.error); return; }
 
     state.players[state.placing].fleet = state.draft.placements;
     state.draft = null;
@@ -599,19 +781,14 @@
     el.shipChips.addEventListener('click', function (event) {
       var chip = event.target.closest ? event.target.closest('.ship-chip') : null;
       if (!chip) return;
-      selectedShipId = selectedShipId === chip.dataset.ship ? null : chip.dataset.ship;
-      renderPlace();
+      if (chip.dataset.ship === selectedShipId) rotateSelected();
+      else selectShip(chip.dataset.ship);
     });
 
-    el.rotateShip.addEventListener('click', function () {
-      state.draft.horizontal = !state.draft.horizontal;
-      save();
-      renderPlace();
-    });
+    el.rotateShip.addEventListener('click', rotateSelected);
 
     el.shuffleFleet.addEventListener('click', function () {
       state.draft.placements = B.randomFleet();
-      selectedShipId = null;
       TG.haptic(10);
       save();
       renderPlace();

@@ -5,6 +5,7 @@
   --sea-line: #d3e0ef;
   --ship: #8e8e93;
   --ship-ink: #ffffff;
+  --ship-picked: #0a84ff;
   --hit: #ff3b30;
   --sunk: #b3261e;
   --miss: #aeb6c2;
@@ -15,6 +16,7 @@
   --sea-line: #24384c;
   --ship: #8e8e93;
   --ship-ink: #000000;
+  --ship-picked: #0a84ff;
   --hit: #ff453a;
   --sunk: #c0322a;
   --miss: #5b7392;
@@ -26,6 +28,7 @@
     --sea-line: #24384c;
     --ship: #8e8e93;
     --ship-ink: #000000;
+    --ship-picked: #0a84ff;
     --hit: #ff453a;
     --sunk: #c0322a;
     --miss: #5b6675;
@@ -42,7 +45,25 @@
   text-align: center;
 }
 
-.place-hint { margin: 14px 0 10px; }
+.place-hint { margin: 12px 0 8px; }
+
+/* Ein Hinweis, der gerade eben nicht ging – kurz rütteln statt Popup. */
+.place-hint.is-warn {
+  color: var(--accent);
+  font-weight: 600;
+  animation: hint-shake .32s ease;
+}
+
+@keyframes hint-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  45% { transform: translateX(4px); }
+  70% { transform: translateX(-2px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .place-hint.is-warn { animation: none; }
+}
 
 /* ---------- Spielraster ---------- */
 
@@ -90,6 +111,11 @@ button.sea-cell:active { transform: scale(.88); }
   box-shadow: none;
 }
 
+.sea-cell.is-ship.is-selected {
+  background: var(--ship-picked);
+  box-shadow: 0 0 0 1px var(--bg) inset;
+}
+
 .sea-cell.is-miss {
   color: var(--miss);
 }
@@ -123,26 +149,39 @@ button.sea-cell:active { transform: scale(.88); }
 
 /* ---------- Schiffsauswahl beim Aufstellen ---------- */
 
+/* Eine Reihe zum Wischen: fünf Schiffsnamen passen nicht nebeneinander,
+   und umgebrochen schöbe sich die letzte Zeile unter die Knopfleiste. */
 .ship-chips {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
   gap: 8px;
   margin: 0;
-  padding: 0;
+  padding: 2px 2px 4px;
   list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ship-chips::-webkit-scrollbar { display: none; }
+
+.ship-chips > li {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
 }
 
 .ship-chip {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: var(--tap);
-  padding: 8px 14px;
+  min-height: 40px;
+  padding: 7px 13px;
   border: 0;
   border-radius: 999px;
   background: var(--surface);
-  font-size: 14px;
+  white-space: nowrap;
+  font-size: 13.5px;
   font-weight: 600;
   transition: transform .12s ease, background .15s ease;
 }
@@ -227,3 +266,12 @@ button.sea-cell:active { transform: scale(.88); }
 }
 
 #view-picker { margin-top: 16px; }
+
+/* Drei Knöpfe nebeneinander werden auf sehr schmalen Handys eng. */
+@media (max-width: 370px) {
+  #place-actions .btn {
+    padding-inline: 8px;
+    font-size: 16px;
+    white-space: nowrap;
+  }
+}

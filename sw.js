@@ -1,6 +1,6 @@
 /* Offline-Cache für Travel Games.
    CACHE hochzählen, wenn sich Dateien geändert haben. */
-const CACHE = 'travel-games-v15';
+const CACHE = 'travel-games-v16';
 
 const PRECACHE = [
   './',

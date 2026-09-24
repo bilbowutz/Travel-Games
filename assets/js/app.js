@@ -132,29 +132,60 @@
   /* ---------- Kurzmeldungen ---------- */
 
   var toastHost = null;
+  var MAX_TOASTS = 2;
+
+  function toastContainer() {
+    if (toastHost) return toastHost;
+    toastHost = document.querySelector('.toast-host');
+    if (!toastHost) {
+      toastHost = document.createElement('div');
+      toastHost.className = 'toast-host';
+      toastHost.setAttribute('role', 'status');
+      toastHost.setAttribute('aria-live', 'polite');
+      document.body.appendChild(toastHost);
+    }
+    return toastHost;
+  }
+
+  function removeToast(element) {
+    if (element.dataset.timer) window.clearTimeout(Number(element.dataset.timer));
+    element.classList.add('is-leaving');
+    window.setTimeout(function () {
+      if (element.parentNode) element.parentNode.removeChild(element);
+    }, 260);
+  }
+
+  function scheduleRemoval(element, duration) {
+    if (element.dataset.timer) window.clearTimeout(Number(element.dataset.timer));
+    element.dataset.timer = String(window.setTimeout(function () {
+      removeToast(element);
+    }, duration));
+  }
 
   TG.toast = function (message, options) {
     options = options || {};
-    if (!toastHost) {
-      toastHost = document.querySelector('.toast-host');
-      if (!toastHost) {
-        toastHost = document.createElement('div');
-        toastHost.className = 'toast-host';
-        toastHost.setAttribute('role', 'status');
-        toastHost.setAttribute('aria-live', 'polite');
-        document.body.appendChild(toastHost);
+    var host = toastContainer();
+    var duration = options.duration || 1900;
+
+    /* Dieselbe Meldung nicht stapeln – nur die Anzeigedauer verlängern.
+       Sonst türmen sich bei wiederholten Fehlversuchen Dutzende auf. */
+    var existing = host.querySelectorAll('.toast');
+    for (var i = 0; i < existing.length; i++) {
+      if (existing[i].textContent === message && !existing[i].classList.contains('is-leaving')) {
+        scheduleRemoval(existing[i], duration);
+        return;
       }
     }
-    var el = document.createElement('div');
-    el.className = 'toast' + (options.variant ? ' toast--' + options.variant : '');
-    el.textContent = message;
-    toastHost.appendChild(el);
-    window.setTimeout(function () {
-      el.classList.add('is-leaving');
-      window.setTimeout(function () {
-        if (el.parentNode) el.parentNode.removeChild(el);
-      }, 260);
-    }, options.duration || 1900);
+
+    var element = document.createElement('div');
+    element.className = 'toast' + (options.variant ? ' toast--' + options.variant : '');
+    element.textContent = message;
+    host.appendChild(element);
+    scheduleRemoval(element, duration);
+
+    /* Nie mehr als eine Handvoll gleichzeitig: die ältesten gehen zuerst. */
+    var alive = host.querySelectorAll('.toast:not(.is-leaving)');
+    for (var j = 0; j < alive.length - MAX_TOASTS; j++) removeToast(alive[j]);
   };
 
   /* ---------- Haptik (nur Android/Chrome, sonst still) ---------- */
