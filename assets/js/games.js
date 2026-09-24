@@ -13,6 +13,14 @@
       status: 'ready'
     },
     {
+      id: 'fotojagd',
+      name: 'Fotojagd',
+      emoji: '📷',
+      description: 'Fünf Fotos von einer Stelle – finde sie',
+      href: 'games/fotojagd/',
+      status: 'ready'
+    },
+    {
       id: 'begriffe-erklaeren',
       name: 'Begriffe erklären',
       emoji: '🗣️',

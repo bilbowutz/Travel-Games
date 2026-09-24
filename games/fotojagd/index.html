@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fotojagd – Travel Games</title>
+<meta name="description" content="Fotojagd: einer versteckt sich und macht fünf Fotos, der andere sucht die Stelle. Alles bleibt auf dem Handy.">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fotojagd">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="game.css">
+<script>
+  try {
+    var m = JSON.parse(localStorage.getItem('travelgames.theme'));
+    if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-theme', m);
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__bar">
+      <a class="back-link" href="../../"><span data-icon="chevron-left"></span>Spiele</a>
+      <span class="spacer"></span>
+      <button type="button" class="icon-btn" id="theme-toggle"></button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen" data-icon="gear"></button>
+    </div>
+    <h1 class="hero__title">Fotojagd</h1>
+    <p class="hero__sub">Einer sucht sich eine Stelle und knipst fünf Fotos. Der andere muss sie finden.</p>
+  </div>
+</header>
+
+<main class="wrap game-main">
+
+  <!-- Namen -->
+  <section id="setup">
+    <div class="panel">
+      <h2>Wer jagt wen?</h2>
+      <p class="panel__hint">Zwei Namen. Ihr versteckt abwechselnd – das Handy wandert mit.</p>
+      <ul class="name-list" id="name-list"></ul>
+      <p class="panel__hint" id="setup-summary">–</p>
+    </div>
+  </section>
+
+  <!-- Fotos machen -->
+  <section id="shoot" hidden>
+    <div class="status">
+      <p class="status__count" id="shoot-title">Fotos</p>
+      <p class="fj-left" id="shoot-left">–</p>
+    </div>
+
+    <p class="fj-hint" id="shoot-hint">–</p>
+
+    <ol class="fj-slots" id="slots"></ol>
+
+    <div class="panel">
+      <label class="fj-label" for="clue">Tipp für die Suche (freiwillig)</label>
+      <input type="text" class="fj-input" id="clue" maxlength="60" placeholder="z. B. „drinnen, im Erdgeschoss“">
+      <p class="panel__hint">Kostet nichts – der Tipp ist von Anfang an zu sehen.</p>
+    </div>
+
+    <input type="file" id="picker" accept="image/*" capture="environment" hidden>
+  </section>
+
+  <!-- Suchen -->
+  <section id="hunt" hidden>
+    <div class="status">
+      <p class="status__count" id="hunt-title">Suchen</p>
+      <p class="fj-left" id="hunt-clock">–</p>
+    </div>
+
+    <p class="fj-clue" id="hunt-clue" hidden>–</p>
+
+    <figure class="fj-stage">
+      <img class="fj-photo" id="hunt-photo" alt="Foto vom Versteck">
+      <figcaption class="fj-caption" id="hunt-caption">–</figcaption>
+    </figure>
+
+    <ul class="fj-dots" id="hunt-dots"></ul>
+
+    <p class="fj-worth" id="hunt-worth">–</p>
+  </section>
+
+  <!-- Bestätigen -->
+  <section id="judge" hidden>
+    <div class="panel">
+      <h2 id="judge-title">Stimmt das?</h2>
+      <p class="panel__hint" id="judge-text">–</p>
+    </div>
+    <ul class="fj-thumbs" id="judge-thumbs"></ul>
+  </section>
+
+  <!-- Runde vorbei -->
+  <section id="huntover" hidden>
+    <div class="panel">
+      <h2 id="huntover-title">Gefunden</h2>
+      <p class="panel__hint" id="huntover-text">–</p>
+    </div>
+    <ul class="fj-thumbs" id="huntover-thumbs"></ul>
+  </section>
+
+  <!-- Ergebnis -->
+  <section id="over" hidden>
+    <div class="panel">
+      <h2 id="over-title">Vorbei</h2>
+      <p class="panel__hint" id="over-text">–</p>
+    </div>
+    <ul class="list-group fj-standings" id="standings"></ul>
+  </section>
+
+  <details class="rules">
+    <summary>So wird gespielt</summary>
+    <ul>
+      <li>Wer dran ist, nimmt das Handy und geht los – außer Sichtweite.</li>
+      <li>An der Stelle fünf Fotos machen. <strong>Das erste soll schwer sein</strong>
+          (ein Detail ganz nah), das letzte leicht (weiter Blick).</li>
+      <li>Handy zurückgeben. Der andere sieht erst nur Foto 1 und geht suchen.</li>
+      <li>Kommt er nicht weiter, kann er das nächste Foto aufdecken – das kostet
+          jedes Mal einen Punkt.</li>
+      <li>Mit einem Foto gefunden: 5 Punkte. Mit allen fünfen: 1 Punkt.
+          Aufgegeben: keiner.</li>
+      <li>Gefunden? Das Handy zurück zum Versteckenden – der bestätigt, ob es
+          wirklich die Stelle ist.</li>
+      <li>Dann Rollentausch. Wer nach allen Runden vorn liegt, gewinnt.</li>
+      <li>Die Fotos bleiben auf dem Handy und werden nach der Partie gelöscht.</li>
+    </ul>
+  </details>
+
+</main>
+
+<div class="actionbar">
+  <div class="actionbar__inner" id="setup-actions">
+    <button type="button" class="btn btn--primary" id="start-game">Los geht’s</button>
+  </div>
+  <div class="actionbar__inner" id="shoot-actions" hidden>
+    <button type="button" class="btn btn--primary" id="shoot-done">Fertig – versteckt →</button>
+  </div>
+  <div class="actionbar__inner" id="hunt-actions" hidden>
+    <button type="button" class="btn" id="reveal">Nächstes Foto</button>
+    <button type="button" class="btn btn--primary" id="found">Gefunden!</button>
+  </div>
+  <div class="actionbar__inner" id="judge-actions" hidden>
+    <button type="button" class="btn" id="judge-no">Nein, weitersuchen</button>
+    <button type="button" class="btn btn--primary" id="judge-yes">Ja, das ist es</button>
+  </div>
+  <div class="actionbar__inner" id="huntover-actions" hidden>
+    <button type="button" class="btn btn--primary" id="next-hunt">Weiter</button>
+  </div>
+  <div class="actionbar__inner" id="over-actions" hidden>
+    <button type="button" class="btn" id="new-names">Neue Namen</button>
+    <button type="button" class="btn btn--primary" id="rematch">Revanche</button>
+  </div>
+</div>
+
+<!-- Übergabe -->
+<div class="curtain" id="curtain" hidden>
+  <div class="curtain__inner">
+    <p class="curtain__icon" aria-hidden="true">🙈</p>
+    <h2 class="curtain__title" id="curtain-title">Weitergeben</h2>
+    <p class="curtain__note" id="curtain-note"></p>
+    <button type="button" class="btn btn--primary btn--block" id="curtain-go">Weiter</button>
+  </div>
+</div>
+
+<!-- Foto groß -->
+<dialog class="fj-viewer" id="viewer">
+  <img class="fj-viewer__img" id="viewer-img" alt="">
+  <div class="fj-viewer__bar">
+    <p class="fj-viewer__label" id="viewer-label">–</p>
+    <button type="button" class="btn btn--primary" id="viewer-close">Fertig</button>
+  </div>
+</dialog>
+
+<!-- Einstellungen -->
+<dialog class="sheet" id="settings">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2>Einstellungen</h2>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="rounds-label">Verstecke pro Person</span>
+      <div class="segmented" role="group" aria-labelledby="rounds-label" id="rounds-picker">
+        <button type="button" data-rounds="1">1</button>
+        <button type="button" data-rounds="2">2</button>
+        <button type="button" data-rounds="3">3</button>
+      </div>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label">Fotos</span>
+      <p class="code-hint" id="photo-hint">–</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--block" id="clear-photos">Alle Fotos löschen</button>
+      </div>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label">Partie</span>
+      <p class="code-hint" id="game-summary">–</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--block btn--danger" id="reset-game">Partie abbrechen</button>
+      </div>
+    </div>
+
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--primary" id="close-settings">Fertig</button>
+    </div>
+    <p class="sheet__hint" id="storage-hint">Fotos und Punkte bleiben auf diesem Gerät – nichts wird hochgeladen.</p>
+  </div>
+</dialog>
+
+<dialog class="confirm" id="confirm">
+  <h2 id="confirm-title">Sicher?</h2>
+  <p id="confirm-text"></p>
+  <div class="sheet__actions">
+    <button type="button" class="btn btn--block btn--primary" id="confirm-ok">Ja</button>
+    <button type="button" class="btn btn--block btn--ghost" id="confirm-cancel">Abbrechen</button>
+  </div>
+</dialog>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="toast-host" role="status" aria-live="polite"></div>
+
+<script src="../../assets/js/app.js"></script>
+<script src="../../assets/js/confetti.js"></script>
+<script src="photos.js"></script>
+<script src="rules.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

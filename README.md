@@ -16,6 +16,9 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
   Flotte sieht. Beim Aufstellen liegt die Flotte schon fertig da: Schiff
   antippen, aufs Wasser tippen zum Verschieben, nochmal aufs Schiff zum
   Drehen – die übrigen Schiffe weichen von selbst aus.
+- **Fotojagd** – einer geht außer Sichtweite und macht fünf Fotos von einer
+  Stelle, der andere sucht sie. Gesucht wird zuerst nur mit Foto 1; jedes
+  weitere Foto kostet einen Punkt. Die Bilder bleiben auf dem Gerät.
 - **Begriffe erklären** – einer erklärt gegen die Uhr, der andere rät. Nur das
   Wort selbst darf nicht fallen. 393 Begriffe in drei Schwierigkeitsstufen,
   eigene lassen sich ergänzen. Auf die Uhr tippen hält die Zeit an.
@@ -138,6 +141,12 @@ games/
     game.css                Farbkacheln, Punktestand
     game.js                 Spiellogik, Zähler, Rückgängig, Code, Speichern
     colors.js               Autofarben mit passender Schriftfarbe
+  fotojagd/
+    index.html              Spielseite
+    game.css                Fotoplätze, Suchansicht, Vollbild
+    game.js                 Phasen, Uhr, Punkte, Speichern
+    rules.js                Punktevergabe (getrennt testbar)
+    photos.js               Fotospeicher in IndexedDB samt Verkleinern
   begriffe-erklaeren/
     index.html              Spielseite
     game.css                Uhr, Begriffsanzeige, Rundenrückblick
@@ -223,6 +232,14 @@ sonst stimmen die Buchstabenfelder im Galgenmännchen nicht.
 **Mäxchen-Rangfolge** steht in `games/maexchen/rules.js`. Sie ist unintuitiv und
 deshalb bewusst als Liste gepflegt: 31 bis 65 aufsteigend, darüber alle Päsche,
 ganz oben das Mäxchen (21). Wer einen Pasch ansagt und nur 65 hat, hat geblufft.
+
+**Fotos der Fotojagd** liegen als einziges Spiel nicht im `localStorage`,
+sondern in **IndexedDB** (`games/fotojagd/photos.js`). Der localStorage fasst je
+nach Browser rund fünf Megabyte, und als Text abgelegt braucht ein Foto gut das
+Doppelte seiner Dateigröße – ein einziges Handyfoto sprengt das. Jedes Bild wird
+vorher auf 1280 px längste Kante und JPEG-Qualität 0,72 heruntergerechnet, aus
+rund vier Megabyte werden so etwa 150 Kilobyte. Nach jeder Runde wird
+aufgeräumt, hochgeladen wird nichts.
 
 **Begriffe zum Erklären** stehen in `games/begriffe-erklaeren/words.js`, getrennt
 nach `LEICHT`, `MITTEL` und `SCHWER`. Anders als die Wörter fürs Malen dürfen sie

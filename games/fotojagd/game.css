@@ -1,0 +1,351 @@
+/* Fotojagd – spielspezifische Styles */
+
+:root {
+  --fj-found: #34c759;
+  --fj-frame: rgba(0, 0, 0, .08);
+}
+
+[data-theme="dark"] {
+  --fj-found: #30d158;
+  --fj-frame: rgba(255, 255, 255, .12);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fj-found: #30d158;
+    --fj-frame: rgba(255, 255, 255, .12);
+  }
+}
+
+#shoot-title, #hunt-title { font-size: 17px; overflow-wrap: anywhere; }
+
+.fj-left {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.fj-hint {
+  margin: 14px 0 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ---------- Fotoplätze ---------- */
+
+/* Fünf Plätze, nummeriert: die Reihenfolge ist Teil des Spiels, deshalb
+   stehen die Nummern auch auf den fertigen Bildern. */
+.fj-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+}
+
+.fj-slots.is-busy { opacity: .5; pointer-events: none; }
+
+.fj-slot {
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.fj-slot__button {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 0 0 var(--hairline) var(--fj-frame) inset;
+  color: var(--text-muted);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.fj-slot__button:active { transform: scale(.97); }
+
+.fj-slot__img {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fj-slot__plus {
+  grid-area: 1 / 1;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.fj-slot__number {
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  min-width: 20px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .55);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Innen statt außen: außerhalb der Kachel überlappte das ✕ die Nachbarn und
+   wurde am rechten Rand abgeschnitten. */
+.fj-slot__clear {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .55);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fj-slot__clear:active { transform: scale(.9); }
+
+/* Platzhalter, solange das Bild noch aus der Datenbank kommt. */
+.fj-slot__wait,
+.fj-thumb .fj-slot__wait {
+  grid-area: 1 / 1;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--fj-frame);
+  border-top-color: var(--text-muted);
+  border-radius: 50%;
+  animation: fj-spin .8s linear infinite;
+}
+
+@keyframes fj-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .fj-slot__wait { animation: none; }
+}
+
+.fj-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.fj-input {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 10px 12px;
+  border: var(--hairline) solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: inherit;
+  font: inherit;
+  font-size: 16px;
+}
+
+.fj-input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ---------- Suchen ---------- */
+
+.fj-clue {
+  margin: 14px 0 0;
+  font-size: 15px;
+  font-style: italic;
+  color: var(--text-muted);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.fj-stage {
+  margin: 14px 0 0;
+}
+
+.fj-photo {
+  display: block;
+  width: 100%;
+  max-height: 58vh;
+  object-fit: contain;
+  border-radius: var(--radius);
+  background: var(--fill);
+  cursor: zoom-in;
+}
+
+.fj-caption {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.fj-dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fj-dot {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fj-dot.is-on {
+  background: var(--accent);
+  color: #fff;
+}
+
+.fj-worth {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ---------- Kleine Vorschauen ---------- */
+
+.fj-thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fj-thumb {
+  display: grid;
+  place-items: center;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: var(--surface);
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.fj-thumb img {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fj-thumb__number {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  min-width: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .55);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ---------- Foto groß ---------- */
+
+.fj-viewer {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #000;
+}
+
+.fj-viewer::backdrop { background: rgba(0, 0, 0, .9); }
+
+.fj-viewer__img {
+  display: block;
+  width: 100%;
+  height: calc(100% - 84px);
+  object-fit: contain;
+  background: #000;
+}
+
+.fj-viewer__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 84px;
+  padding: 0 16px calc(env(safe-area-inset-bottom) / 2);
+  background: #000;
+}
+
+.fj-viewer__label {
+  flex: 1;
+  margin: 0;
+  color: rgba(255, 255, 255, .7);
+  font-size: 14px;
+}
+
+/* ---------- Endstand ---------- */
+
+.fj-standings { margin-top: 16px; }
+
+.fj-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 2px 12px;
+  min-height: 60px;
+  padding: 12px 16px;
+}
+
+.fj-row__name {
+  font-size: 17px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.fj-row__detail {
+  grid-column: 1;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.fj-row__points {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-size: 28px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.fj-row.is-winner .fj-row__points { color: var(--fj-found); }
