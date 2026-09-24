@@ -13,6 +13,14 @@
       status: 'ready'
     },
     {
+      id: 'maexchen',
+      name: 'Mäxchen',
+      emoji: '🤥',
+      description: 'Würfeln, ansagen, bluffen – nur du siehst den Wurf',
+      href: 'games/maexchen/',
+      status: 'ready'
+    },
+    {
       id: 'kniffel',
       name: 'Kniffel',
       emoji: '🎲',

@@ -22,7 +22,8 @@
   border: 0;
   border-radius: 22%;
   background: var(--surface);
-  transition: transform .12s ease, background .15s ease;
+  color: var(--text);
+  transition: transform .12s ease, background .15s ease, color .15s ease;
 }
 
 .die:active { transform: scale(.93); }
@@ -31,6 +32,7 @@
 
 .die.is-held {
   background: var(--accent-soft);
+  color: var(--accent);
   box-shadow: 0 0 0 2px var(--accent) inset;
   transform: translateY(-4px);
 }
@@ -46,23 +48,7 @@
   100% { transform: rotate(0) scale(1); }
 }
 
-.die__pips {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 9%;
-  width: 68%;
-  height: 68%;
-}
-
-.die__pips i {
-  border-radius: 50%;
-  background: transparent;
-}
-
-.die__pips i.on { background: var(--text); }
-
-.die.is-held .die__pips i.on { background: var(--accent); }
+/* Die Augen selbst kommen aus base.css und folgen der Schriftfarbe. */
 
 .dice-hint {
   margin: 12px 0 0;

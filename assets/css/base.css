@@ -847,6 +847,24 @@ button {
   color: var(--accent);
 }
 
+/* ---------- Würfelaugen ---------- */
+
+.die-pips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 9%;
+  width: 68%;
+  height: 68%;
+}
+
+.die-pips i {
+  border-radius: 50%;
+  background: transparent;
+}
+
+.die-pips i.on { background: currentColor; }
+
 /* ---------- Konfetti ---------- */
 
 #confetti {

@@ -1,0 +1,176 @@
+/* Mäxchen – spielspezifische Styles */
+
+/* ---------- Leben ---------- */
+
+.mx-players { margin-top: 0; }
+
+.mx-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  font-weight: 500;
+}
+
+.mx-row__name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mx-row__lives {
+  flex: none;
+  font-size: 15px;
+  letter-spacing: .12em;
+}
+
+.mx-row.is-turn { background: var(--accent-soft); }
+.mx-row.is-turn .mx-row__name { color: var(--accent); font-weight: 700; }
+
+.mx-row.is-out { opacity: .45; }
+.mx-row.is-out .mx-row__name { text-decoration: line-through; }
+
+/* ---------- Ansage der Vorperson ---------- */
+
+.mx-claim { margin-top: 14px; text-align: center; }
+
+.mx-claim__lead {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.mx-claim__value {
+  margin: 8px 0 0;
+  font-size: clamp(42px, 13vw, 62px);
+  font-weight: 700;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.mx-claim__value.is-maexchen {
+  font-size: clamp(30px, 9vw, 44px);
+  color: var(--gold);
+}
+
+.mx-claim .panel__hint { margin: 10px 0 0; }
+
+/* ---------- Eigener Wurf ---------- */
+
+.mx-secret {
+  margin: 14px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--danger);
+  text-align: center;
+}
+
+.mx-dice {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mx-die {
+  display: grid;
+  place-items: center;
+  width: clamp(72px, 24vw, 104px);
+  aspect-ratio: 1;
+  border-radius: 20%;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.mx-dice--small .mx-die { width: clamp(52px, 16vw, 72px); }
+
+.mx-die.is-rolling { animation: mx-roll .34s ease; }
+
+@keyframes mx-roll {
+  0% { transform: scale(.7) rotate(-14deg); opacity: 0; }
+  70% { transform: scale(1.07) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); }
+}
+
+.mx-roll {
+  margin: 12px 0 0;
+  font-size: 30px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.mx-roll small {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.mx-hint {
+  margin: 12px 0 0;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.mx-hint.is-forced { color: var(--danger); font-weight: 600; }
+
+/* ---------- Werte zum Ansagen ---------- */
+
+.mx-values {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mx-value {
+  width: 100%;
+  min-height: 52px;
+  padding: 6px 4px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 19px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transition: transform .1s ease, background .15s ease;
+}
+
+.mx-value:active { transform: scale(.95); background: var(--accent-soft); }
+
+.mx-value small {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.mx-value.is-mine { background: var(--found-soft); }
+.mx-value.is-mine small { color: var(--found); }
+
+.mx-value.is-top { background: var(--gold-soft); color: var(--gold); font-size: 16px; }
+
+/* ---------- Aufdecken ---------- */
+
+.mx-reveal { margin-top: 14px; text-align: center; }
+.mx-reveal .mx-dice { margin-top: 14px; }
+
+.mx-reveal__line {
+  margin: 14px 0 0;
+  font-size: 17px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.mx-reveal__line.is-bluff { color: var(--danger); }
+.mx-reveal__line.is-true { color: var(--found); }

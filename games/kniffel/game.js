@@ -12,16 +12,6 @@
   var MAX_NAME = 14;
   var ROLLS_PER_TURN = 3;
 
-  /* Welche der neun Felder eines Würfels ein Auge tragen. */
-  var PIPS = {
-    1: [4],
-    2: [0, 8],
-    3: [0, 4, 8],
-    4: [0, 2, 6, 8],
-    5: [0, 2, 4, 6, 8],
-    6: [0, 2, 3, 5, 6, 8]
-  };
-
   var el = {
     setup: document.getElementById('setup'),
     play: document.getElementById('play'),
@@ -202,17 +192,7 @@
         ? 'Würfel ' + value + (state.held[index] ? ', liegt' : ', wird neu geworfen')
         : 'Würfel, noch nicht geworfen');
 
-      var pips = document.createElement('span');
-      pips.className = 'die__pips';
-      pips.setAttribute('aria-hidden', 'true');
-      var on = PIPS[value] || [];
-      for (var i = 0; i < 9; i++) {
-        var pip = document.createElement('i');
-        if (on.indexOf(i) > -1) pip.className = 'on';
-        pips.appendChild(pip);
-      }
-
-      die.appendChild(pips);
+      die.appendChild(TG.dice.build(value));
       item.appendChild(die);
       el.diceRow.appendChild(item);
     });

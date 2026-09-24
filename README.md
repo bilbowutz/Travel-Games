@@ -14,6 +14,8 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
 - **Schiffe versenken** – zu zweit auf einem Handy, abwechselnd. Zwischen den
   Zügen schiebt sich ein Sichtschutz davor, damit niemand die gegnerische
   Flotte sieht.
+- **Mäxchen** – würfeln, ansagen, bluffen. Nur wer dran ist, sieht den Wurf:
+  das Handy übernimmt die Rolle des Würfelbechers.
 - **Kniffel** – der Würfelklassiker für zwei bis sechs, alle auf einem Gerät.
   Das Blatt zeigt für jeden Wurf, was welches Feld bringen würde.
 - **Malen und Raten** – eine Person zeichnet mit dem Finger, die anderen rufen.
@@ -113,6 +115,7 @@ assets/
                             geteilt von Malen und Raten und Galgenmännchen
   js/sketch.js              Zeichenfläche: Striche in Bruchteilen der
                             Kantenlänge, dadurch in jeder Größe darstellbar
+  js/dice.js                Würfelaugen im 3×3-Raster, gefärbt über currentColor
   img/                      Icons (Favicon, PWA, Apple Touch)
 games/
   auto-bingo/
@@ -158,6 +161,10 @@ games/
     index.html, game.css, game.js
                             Zeichenfläche mit Vorgabe und Galerie
     shapes.js               Zufallsformen aus einem Startwert (getrennt testbar)
+  maexchen/
+    index.html, game.css, game.js
+                            Wurf, Ansage, Aufdecken, Leben
+    rules.js                Rangfolge und Urteil (getrennt testbar)
 ```
 
 ## Ein neues Spiel ergänzen
@@ -201,6 +208,10 @@ das Feld darf danach frei gewählt werden.
 `assets/js/words.js`. Nur Hauptwörter, die sich zeichnen lassen – dann taugen
 sie auch zum Raten. Wichtig beim Ergänzen: keine Leerzeichen und Bindestriche,
 sonst stimmen die Buchstabenfelder im Galgenmännchen nicht.
+
+**Mäxchen-Rangfolge** steht in `games/maexchen/rules.js`. Sie ist unintuitiv und
+deshalb bewusst als Liste gepflegt: 31 bis 65 aufsteigend, darüber alle Päsche,
+ganz oben das Mäxchen (21). Wer einen Pasch ansagt und nur 65 hat, hat geblufft.
 
 **Schiffe-versenken-Regeln** stehen in `games/schiffe-versenken/rules.js`,
 bewusst getrennt von der Oberfläche. Dort liegen Flotte, Brettgröße und die
