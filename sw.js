@@ -1,6 +1,6 @@
 /* Offline-Cache für Travel Games.
    CACHE hochzählen, wenn sich Dateien geändert haben. */
-const CACHE = 'travel-games-v16';
+const CACHE = 'travel-games-v17';
 
 const PRECACHE = [
   './',
@@ -66,6 +66,12 @@ const PRECACHE = [
   './games/kritzelbild/game.css',
   './games/kritzelbild/game.js',
   './games/kritzelbild/shapes.js',
+  './games/begriffe-erklaeren/',
+  './games/begriffe-erklaeren/index.html',
+  './games/begriffe-erklaeren/game.css',
+  './games/begriffe-erklaeren/game.js',
+  './games/begriffe-erklaeren/rules.js',
+  './games/begriffe-erklaeren/words.js',
   './games/maexchen/',
   './games/maexchen/index.html',
   './games/maexchen/game.css',

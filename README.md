@@ -16,6 +16,9 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
   Flotte sieht. Beim Aufstellen liegt die Flotte schon fertig da: Schiff
   antippen, aufs Wasser tippen zum Verschieben, nochmal aufs Schiff zum
   Drehen – die übrigen Schiffe weichen von selbst aus.
+- **Begriffe erklären** – einer erklärt gegen die Uhr, der andere rät. Nur das
+  Wort selbst darf nicht fallen. 393 Begriffe in drei Schwierigkeitsstufen,
+  eigene lassen sich ergänzen. Auf die Uhr tippen hält die Zeit an.
 - **Mäxchen** – würfeln, ansagen, bluffen. Nur wer dran ist, sieht den Wurf:
   das Handy übernimmt die Rolle des Würfelbechers.
 - **Kniffel** – der Würfelklassiker für zwei bis sechs, alle auf einem Gerät.
@@ -135,6 +138,12 @@ games/
     game.css                Farbkacheln, Punktestand
     game.js                 Spiellogik, Zähler, Rückgängig, Code, Speichern
     colors.js               Autofarben mit passender Schriftfarbe
+  begriffe-erklaeren/
+    index.html              Spielseite
+    game.css                Uhr, Begriffsanzeige, Rundenrückblick
+    game.js                 Uhr, Züge, Punkte, eigene Begriffe, Speichern
+    rules.js                Stapel und Punktezählung (getrennt testbar)
+    words.js                393 Begriffe in drei Stufen
   schiffe-versenken/
     index.html              Spielseite
     game.css                Spielraster, Sichtschutz
@@ -214,6 +223,12 @@ sonst stimmen die Buchstabenfelder im Galgenmännchen nicht.
 **Mäxchen-Rangfolge** steht in `games/maexchen/rules.js`. Sie ist unintuitiv und
 deshalb bewusst als Liste gepflegt: 31 bis 65 aufsteigend, darüber alle Päsche,
 ganz oben das Mäxchen (21). Wer einen Pasch ansagt und nur 65 hat, hat geblufft.
+
+**Begriffe zum Erklären** stehen in `games/begriffe-erklaeren/words.js`, getrennt
+nach `LEICHT`, `MITTEL` und `SCHWER`. Anders als die Wörter fürs Malen dürfen sie
+abstrakt sein – erklären lässt sich mehr als zeichnen. Doppelte über die Stufen
+hinweg vermeiden: die leichtere Stufe gewinnt. Eigene Begriffe tragen die
+Spielenden selbst über die Einstellungen ein, sie liegen nur auf dem Gerät.
 
 **Schiffe-versenken-Regeln** stehen in `games/schiffe-versenken/rules.js`,
 bewusst getrennt von der Oberfläche. Dort liegen Flotte, Brettgröße und die

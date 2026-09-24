@@ -1,0 +1,246 @@
+/* Begriffe erklären – spielspezifische Styles */
+
+:root {
+  --ex-hit: #34c759;
+  --ex-tight: #ff3b30;
+}
+
+[data-theme="dark"] {
+  --ex-hit: #30d158;
+  --ex-tight: #ff453a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ex-hit: #30d158;
+    --ex-tight: #ff453a;
+  }
+}
+
+/* ---------- Uhr ---------- */
+
+/* Die ganze Uhr ist der Pausenknopf – ein eigener wäre ein dritter Knopf in
+   einer Leiste, die schon voll ist. */
+.ex-clock {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 18px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ex-clock:active { background: var(--fill); }
+
+.ex-clock__track {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--fill);
+  overflow: hidden;
+}
+
+.ex-clock__fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width .1s linear, background .3s ease;
+}
+
+.ex-clock__time {
+  flex: none;
+  min-width: 3.6em;
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.ex-clock.is-tight .ex-clock__fill { background: var(--ex-tight); }
+.ex-clock.is-tight .ex-clock__time { color: var(--ex-tight); }
+
+/* Während erklärt wird, zählt nur der Begriff: Untertitel und Regelkasten
+   treten zur Seite, die Überschrift wird zur schmalen Kopfzeile. */
+body.is-playing .hero__sub,
+body.is-playing .rules { display: none; }
+
+body.is-playing .hero__title {
+  margin-top: 2px;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+/* Der Begriff soll die freie Fläche füllen, nicht oben kleben: dafür wird die
+   Seite beim Erklären zur Spalte, und der Hauptbereich nimmt sich den Rest. */
+body.is-playing {
+  display: flex;
+  flex-direction: column;
+}
+
+body.is-playing .game-main,
+body.is-playing #turn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ---------- Der Begriff ---------- */
+
+.ex-word {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 34vh;
+  margin: 0;
+  padding: 12px 4px;
+  font-size: clamp(32px, 12vw, 54px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-align: center;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+.ex-word.is-long { font-size: clamp(26px, 8.5vw, 42px); }
+
+/* Kurz aufleuchten, damit man ohne Hinsehen merkt, dass es gezählt hat. */
+.ex-word.is-hit { animation: ex-hit .3s ease; }
+.ex-word.is-skip { animation: ex-skip .3s ease; }
+
+@keyframes ex-hit {
+  from { color: var(--ex-hit); transform: scale(1.06); }
+  to { color: inherit; transform: scale(1); }
+}
+
+@keyframes ex-skip {
+  from { color: var(--text-muted); opacity: .4; }
+  to { color: inherit; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ex-word.is-hit, .ex-word.is-skip { animation: none; }
+}
+
+.ex-tally {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Rückblick auf die Runde ---------- */
+
+.ex-recap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ex-recap__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.ex-recap__item.is-hit {
+  color: inherit;
+  font-weight: 600;
+}
+
+.ex-recap__mark {
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.ex-recap__item.is-hit .ex-recap__mark { color: var(--ex-hit); }
+
+/* Der Begriff, der beim Gongschlag noch offen war. */
+.ex-recap__item.is-pending {
+  background: transparent;
+  box-shadow: 0 0 0 var(--hairline) var(--border) inset;
+  font-style: italic;
+}
+
+.ex-recap__empty {
+  width: 100%;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ---------- Endstand ---------- */
+
+.ex-standings { margin-top: 16px; }
+
+.ex-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 2px 12px;
+  min-height: 60px;
+  padding: 12px 16px;
+}
+
+.ex-row__name {
+  font-size: 17px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.ex-row__detail {
+  grid-column: 1;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.ex-row__points {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-size: 28px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.ex-row.is-winner .ex-row__points { color: var(--ex-hit); }
+
+/* ---------- Eigene Begriffe ---------- */
+
+.ex-own {
+  width: 100%;
+  padding: 10px 12px;
+  border: var(--hairline) solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: inherit;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.ex-own:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}

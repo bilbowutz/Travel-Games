@@ -13,6 +13,14 @@
       status: 'ready'
     },
     {
+      id: 'begriffe-erklaeren',
+      name: 'Begriffe erklären',
+      emoji: '🗣️',
+      description: 'Erklären gegen die Uhr – der andere rät',
+      href: 'games/begriffe-erklaeren/',
+      status: 'ready'
+    },
+    {
       id: 'maexchen',
       name: 'Mäxchen',
       emoji: '🤥',

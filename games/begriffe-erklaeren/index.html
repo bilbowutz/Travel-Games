@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Begriffe erklären – Travel Games</title>
+<meta name="description" content="Begriffe erklären gegen die Uhr: einer erklärt, der andere rät. Zu zweit auf einem Handy, offline spielbar.">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Begriffe erklären">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="game.css">
+<script>
+  try {
+    var m = JSON.parse(localStorage.getItem('travelgames.theme'));
+    if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-theme', m);
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__bar">
+      <a class="back-link" href="../../"><span data-icon="chevron-left"></span>Spiele</a>
+      <span class="spacer"></span>
+      <button type="button" class="icon-btn" id="theme-toggle"></button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen" data-icon="gear"></button>
+    </div>
+    <h1 class="hero__title">Begriffe erklären</h1>
+    <p class="hero__sub">Einer erklärt, der andere rät – nur das Wort selbst darf nicht fallen.</p>
+  </div>
+</header>
+
+<main class="wrap game-main">
+
+  <!-- Namen -->
+  <section id="setup">
+    <div class="panel">
+      <h2>Wer spielt gegen wen?</h2>
+      <p class="panel__hint">Zwei Namen. Ihr erklärt abwechselnd, das Handy bleibt bei dem, der dran ist.</p>
+      <ul class="name-list" id="name-list"></ul>
+      <p class="panel__hint" id="setup-summary">–</p>
+    </div>
+  </section>
+
+  <!-- Erklären -->
+  <section id="turn" hidden>
+    <button type="button" class="ex-clock" id="clock" aria-label="Pausieren">
+      <span class="ex-clock__track" aria-hidden="true"><i class="ex-clock__fill" id="clock-fill"></i></span>
+      <span class="ex-clock__time" id="clock-time">–</span>
+    </button>
+
+    <p class="ex-word" id="word">–</p>
+
+    <p class="ex-tally" id="tally">–</p>
+  </section>
+
+  <!-- Runde vorbei -->
+  <section id="turnover" hidden>
+    <div class="panel">
+      <h2 id="turnover-title">Zeit um</h2>
+      <p class="panel__hint" id="turnover-text">–</p>
+    </div>
+    <ul class="ex-recap" id="recap"></ul>
+  </section>
+
+  <!-- Ergebnis -->
+  <section id="over" hidden>
+    <div class="panel">
+      <h2 id="over-title">Vorbei</h2>
+      <p class="panel__hint" id="over-text">–</p>
+    </div>
+    <ul class="list-group ex-standings" id="standings"></ul>
+  </section>
+
+  <details class="rules">
+    <summary>So wird gespielt</summary>
+    <ul>
+      <li>Wer dran ist, hält das Handy und sieht den Begriff. Der andere schaut weg.</li>
+      <li>Erklären, umschreiben, Beispiele nennen – <strong>nur das Wort selbst nicht sagen</strong>,
+          auch keinen Teil davon und keine Übersetzung.</li>
+      <li>Erraten? Antippen, der nächste Begriff kommt sofort.</li>
+      <li>Keine Idee? Überspringen kostet keinen Punkt, nur Zeit.</li>
+      <li>Jeder erratene Begriff zählt einen Punkt. Wer nach allen Runden vorn liegt, gewinnt.</li>
+      <li>Auf die Uhr tippen hält die Zeit an – praktisch, wenn die Ausfahrt kommt.</li>
+    </ul>
+  </details>
+
+</main>
+
+<div class="actionbar">
+  <div class="actionbar__inner" id="setup-actions">
+    <button type="button" class="btn btn--primary" id="start-game">Los geht’s</button>
+  </div>
+  <div class="actionbar__inner" id="turn-actions" hidden>
+    <button type="button" class="btn" id="skip">Überspringen</button>
+    <button type="button" class="btn btn--primary" id="got-it">Erraten ✓</button>
+  </div>
+  <div class="actionbar__inner" id="turnover-actions" hidden>
+    <button type="button" class="btn btn--primary" id="next-turn">Weiter</button>
+  </div>
+  <div class="actionbar__inner" id="over-actions" hidden>
+    <button type="button" class="btn" id="new-names">Neue Namen</button>
+    <button type="button" class="btn btn--primary" id="rematch">Revanche</button>
+  </div>
+</div>
+
+<!-- Übergabe ans nächste Erklärteam -->
+<div class="curtain" id="curtain" hidden>
+  <div class="curtain__inner">
+    <p class="curtain__icon" aria-hidden="true">🙈</p>
+    <h2 class="curtain__title" id="curtain-title">Weitergeben</h2>
+    <p class="curtain__note" id="curtain-note"></p>
+    <button type="button" class="btn btn--primary btn--block" id="curtain-go">Los!</button>
+  </div>
+</div>
+
+<!-- Angehaltene Uhr -->
+<div class="curtain" id="pause" hidden>
+  <div class="curtain__inner">
+    <p class="curtain__icon" aria-hidden="true">⏸</p>
+    <h2 class="curtain__title">Angehalten</h2>
+    <p class="curtain__note" id="pause-note">–</p>
+    <button type="button" class="btn btn--primary btn--block" id="pause-go">Weiter</button>
+  </div>
+</div>
+
+<!-- Einstellungen -->
+<dialog class="sheet" id="settings">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2>Einstellungen</h2>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="level-label">Schwierigkeit</span>
+      <div class="segmented" role="group" aria-labelledby="level-label" id="level-picker">
+        <button type="button" data-level="leicht">Leicht</button>
+        <button type="button" data-level="mittel">Mittel</button>
+        <button type="button" data-level="schwer">Schwer</button>
+      </div>
+      <p class="code-hint" id="level-hint">–</p>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="seconds-label">Zeit pro Runde</span>
+      <div class="segmented" role="group" aria-labelledby="seconds-label" id="seconds-picker">
+        <button type="button" data-seconds="30">30 s</button>
+        <button type="button" data-seconds="60">60 s</button>
+        <button type="button" data-seconds="90">90 s</button>
+      </div>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="rounds-label">Runden pro Person</span>
+      <div class="segmented" role="group" aria-labelledby="rounds-label" id="rounds-picker">
+        <button type="button" data-rounds="2">2</button>
+        <button type="button" data-rounds="3">3</button>
+        <button type="button" data-rounds="5">5</button>
+      </div>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="own-label">Eigene Begriffe</span>
+      <textarea class="ex-own" id="own-words" rows="4" aria-labelledby="own-label"
+        placeholder="Ein Begriff pro Zeile&#10;Onkel Rolf&#10;unser Zelturlaub"></textarea>
+      <p class="code-hint" id="own-hint">Kommen zu den vorgegebenen dazu und bleiben auf diesem Gerät.</p>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label">Partie</span>
+      <p class="code-hint" id="game-summary">–</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--block btn--danger" id="reset-game">Partie abbrechen</button>
+      </div>
+    </div>
+
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--primary" id="close-settings">Fertig</button>
+    </div>
+    <p class="sheet__hint" id="storage-hint">Alles wird nur lokal auf diesem Gerät gespeichert.</p>
+  </div>
+</dialog>
+
+<dialog class="confirm" id="confirm">
+  <h2 id="confirm-title">Sicher?</h2>
+  <p id="confirm-text"></p>
+  <div class="sheet__actions">
+    <button type="button" class="btn btn--block btn--primary" id="confirm-ok">Ja</button>
+    <button type="button" class="btn btn--block btn--ghost" id="confirm-cancel">Abbrechen</button>
+  </div>
+</dialog>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="toast-host" role="status" aria-live="polite"></div>
+
+<script src="../../assets/js/app.js"></script>
+<script src="../../assets/js/confetti.js"></script>
+<script src="words.js"></script>
+<script src="rules.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
