@@ -38,6 +38,15 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
 - **Erzählwürfel** – Symbole würfeln und daraus gemeinsam eine Geschichte bauen.
   Kooperativ, ohne Punkte und ohne Gewinner.
 
+## Prüfen
+
+```
+node tests/run.js
+```
+
+665 Prüfungen über Regeln, Inhalte und Gerüst – ohne Installation, ohne
+Browser, in unter einer Sekunde. Einzelheiten in [tests/README.md](tests/README.md).
+
 ## Features
 
 - 📱 Mobile-first, Tap-Ziele ≥ 44 px, funktioniert ab 320 px Breite

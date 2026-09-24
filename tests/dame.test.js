@@ -1,0 +1,289 @@
+/* Dame – die Hausregeln, geprüft an gestellten Diagrammen.
+   Zeile 0 ist oben (y=0). w/W gehören Spieler 0, b/B Spieler 1. */
+'use strict';
+const { load } = require('./harness.js');
+
+exports.name = 'Dame';
+
+exports.run = function (t) {
+  const D = load('games/dame/rules.js').dame;
+  const N = D.SIZE;
+
+  // Brett aus Text: Zeile 0 = oben (y=0). w/W = Spieler 0, b/B = Spieler 1.
+  function board(text) {
+    const rows = text.trim().split('\n').map(r => r.trim());
+    const b = new Array(N * N).fill(null);
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (ch === 'w') b[y * N + x] = { side: 0, king: false };
+      if (ch === 'W') b[y * N + x] = { side: 0, king: true };
+      if (ch === 'b') b[y * N + x] = { side: 1, king: false };
+      if (ch === 'B') b[y * N + x] = { side: 1, king: true };
+    }));
+    return b;
+  }
+  const show = m => D.moveLabel(m) + (m.captures.length ? '(' + m.captures.map(c => D.cellLabel(c[0], c[1])).join(',') + ')' : '');
+  const sorted = ms => ms.map(show).sort();
+  
+  // --- Startaufstellung ---
+  const start = D.startBoard();
+  t.ok('12 Steine je Seite', D.countPieces(start, 0).total === 12 && D.countPieces(start, 1).total === 12,
+    [D.countPieces(start, 0), D.countPieces(start, 1)]);
+  t.ok('keine Damen am Anfang', D.countPieces(start, 0).kings === 0);
+  t.ok('nur dunkle Felder belegt', start.every((p, i) => !p || D.playable(i % N, Math.floor(i / N))));
+  t.ok('zwei leere Reihen in der Mitte', start.slice(3 * N, 5 * N).every(p => !p));
+  const opening = D.legalMoves(start, 0);
+  t.ok('7 Eröffnungszüge', opening.length === 7, sorted(opening));
+  t.ok('Eröffnung ohne Schlag', opening.every(m => m.captures.length === 0));
+  t.ok('kein Schlagzwang am Anfang', !D.mustCapture(start, 0));
+  
+  // --- Schlagzwang ---
+  // w auf e3 (4,5) kann d4 (3,4) schlagen und nach c5 (2,3) – b2 (1,6) ist gesperrt.
+  const zwang = board(`
+    ........
+    ........
+    ........
+    ........
+    ...b....
+    ....w...
+    .w......
+    ........`);
+  const mz = D.legalMoves(zwang, 0);
+  t.ok('Schlagzwang: nur Schläge', mz.length === 1 && mz[0].captures.length === 1, sorted(mz));
+  t.ok('Schlagzwang: Zug stimmt', mz.length && show(mz[0]) === 'e3xc5(d4)', sorted(mz));
+  t.ok('Schlagzwang: anderer Stein gesperrt', !mz.some(m => D.cellLabel(m.from[0], m.from[1]) === 'b2'), sorted(mz));
+  t.ok('mustCapture meldet an', D.mustCapture(zwang, 0));
+  
+  // --- Stein schlägt rückwärts ---
+  const rueck = board(`
+    ........
+    ........
+    ........
+    ........
+    ...w....
+    ....b...
+    ........
+    ........`);
+  const mr = D.legalMoves(rueck, 0);
+  t.ok('Stein schlägt rückwärts', mr.length === 1 && show(mr[0]) === 'd4xf2(e3)', sorted(mr));
+  
+  // --- Einfacher Sprung ---
+  // w auf b3 (1,5), Gegner c4 (2,4), Landung d5 (3,3)
+  const einmal = board(`
+    ........
+    ........
+    ........
+    ........
+    ..b.....
+    .w......
+    ........
+    ........`);
+  const me = D.legalMoves(einmal, 0);
+  t.ok('einfacher Sprung', me.length === 1 && me[0].captures.length === 1 && show(me[0]) === 'b3xd5(c4)', sorted(me));
+  
+  // --- Doppelsprung ist EIN Zug ---
+  // b3 (1,5) schlägt c4 (2,4) nach d5 (3,3), dann e6 (4,2) nach f7 (5,1)
+  const doppel = board(`
+    ........
+    ........
+    ....b...
+    ........
+    ..b.....
+    .w......
+    ........
+    ........`);
+  const md = D.legalMoves(doppel, 0);
+  t.ok('Doppelsprung ist EIN Zug', md.length === 1 && md[0].captures.length === 2, sorted(md));
+  t.ok('Doppelsprung endet auf f7', md.length && D.cellLabel(md[0].to[0], md[0].to[1]) === 'f7', md.length ? show(md[0]) : '-');
+  const rd = D.applyMove(doppel, md[0]);
+  t.ok('Doppelsprung nimmt beide Steine', D.countPieces(rd.board, 1).total === 0, D.countPieces(rd.board, 1));
+  
+  // --- Umwandlung am Zugende ---
+  const wandel = board(`
+    ........
+    ..w.....
+    ........
+    ........
+    ........
+    ........
+    ........
+    ........`);
+  const mw = D.legalMoves(wandel, 0);
+  const rw = D.applyMove(wandel, mw[0]);
+  t.ok('Umwandlung auf Grundlinie', rw.promoted && D.at(rw.board, mw[0].to[0], mw[0].to[1]).king, show(mw[0]));
+  
+  // --- Durchsprung durch die Grundlinie wandelt NICHT um ---
+  // b6 (1,2) schlägt c7 (2,1) nach d8 (3,0), springt weiter über e7 (4,1) nach f6 (5,2)
+  const durch = board(`
+    ........
+    ..b.b...
+    .w......
+    ........
+    ........
+    ........
+    ........
+    ........`);
+  const mdu = D.legalMoves(durch, 0);
+  t.ok('Durchsprung: ein Zug mit zwei Steinen', mdu.length === 1 && mdu[0].captures.length === 2, sorted(mdu));
+  t.ok('Durchsprung läuft über die Grundlinie hinweg',
+    mdu.length && D.cellLabel(mdu[0].to[0], mdu[0].to[1]) === 'f6', mdu.length ? show(mdu[0]) : '-');
+  const rdu = D.applyMove(durch, mdu[0]);
+  t.ok('Durchsprung macht KEINE Dame', rdu.promoted === false && !D.at(rdu.board, mdu[0].to[0], mdu[0].to[1]).king);
+  
+  // --- Fliegende Dame ---
+  const fliegend = board(`
+    ........
+    ........
+    ........
+    ........
+    ........
+    ......W.
+    ........
+    ........`);
+  t.ok('Dame zieht weit', D.legalMoves(fliegend, 0).length === 9, sorted(D.legalMoves(fliegend, 0)));
+  
+  const damenschlag = board(`
+    ........
+    ........
+    ...b....
+    ........
+    ........
+    ......W.
+    ........
+    ........`);
+  const mds = D.legalMoves(damenschlag, 0);
+  t.ok('Dame schlägt auf Distanz', mds.length === 2 && mds.every(m => m.captures.length === 1), sorted(mds));
+  t.ok('Dame landet hinter dem Opfer', sorted(mds).join('|') === ['g3xc7(d6)', 'g3xb8(d6)'].sort().join('|'), sorted(mds));
+  
+  // Zwei Gegner hintereinander auf der Diagonale: kein Schlag
+  const block = board(`
+    ........
+    ........
+    ...b....
+    ....b...
+    ........
+    ......W.
+    ........
+    ........`);
+  t.ok('zwei Steine hintereinander blockieren', D.legalMoves(block, 0).every(m => m.captures.length === 0),
+    sorted(D.legalMoves(block, 0)));
+  
+  // Eigener Stein blockiert die Dame
+  const eigen = board(`
+    ........
+    ........
+    ........
+    ....w...
+    ........
+    ......W.
+    ........
+    ........`);
+  t.ok('eigener Stein blockiert', !D.legalMoves(eigen, 0).some(m =>
+    m.from[0] === 6 && m.from[1] === 5 && m.to[1] < 3));
+  
+  // --- Spielende ---
+  const leer = board(`
+    ........
+    ........
+    ........
+    ........
+    ........
+    ........
+    ........
+    ..w.....`);
+  const ol = D.outcome(leer, 1);
+  t.ok('keine Steine -> verloren', ol.over && ol.winner === 0 && ol.reason === 'steine', ol);
+  
+  // w auf a1 (0,7) ist eingeklemmt: b2 (1,6) besetzt, Landung c3 (2,5) auch
+  const fest = board(`
+    ........
+    ........
+    ........
+    ........
+    ........
+    ..b.....
+    .b......
+    w.......`);
+  const of = D.outcome(fest, 0);
+  t.ok('zugunfähig -> verloren', of.over && of.winner === 1 && of.reason === 'zugunfaehig', [of, sorted(D.legalMoves(fest, 0))]);
+  t.ok('laufende Partie ist nicht vorbei', D.outcome(D.startBoard(), 0).over === false);
+  
+  // --- Kein Stein wird im selben Zug zweimal geschlagen ---
+  // Eine Dame im Kreis von Gegnern: ohne die Markierung "schon genommen" läuft
+  // die Suche nach Schlagfolgen endlos, weil derselbe Stein wieder auftaucht.
+  const kreis = board(`
+    ........
+    ........
+    ..b.b...
+    ...W....
+    ..b.b...
+    ........
+    ........
+    ........`);
+  let sprengte = false;
+  let mk = [];
+  try { mk = D.legalMoves(kreis, 0); } catch (e) { sprengte = true; }
+  t.ok('Damen-Kreis bringt die Suche nicht zum Absturz', !sprengte);
+  t.ok('Damen-Kreis liefert Züge', mk.length > 0, mk.length);
+  t.ok('kein Stein doppelt in einer Folge', mk.every(m => {
+    const ids = m.captures.map(c => c.join(','));
+    return new Set(ids).size === ids.length;
+  }), sorted(mk));
+  t.ok('nie mehr geschlagen als vorhanden', mk.every(m => m.captures.length <= 4), sorted(mk));
+  const rk = mk.length ? D.applyMove(kreis, mk[0]) : null;
+  t.ok('geschlagene Steine verschwinden wirklich', !rk || D.countPieces(rk.board, 1).total === 4 - mk[0].captures.length,
+    rk ? [mk[0].captures.length, D.countPieces(rk.board, 1).total] : '-');
+  
+  // --- Züge verändern das Ausgangsbrett nicht ---
+  const vorher = JSON.stringify(start);
+  D.applyMove(start, opening[0]);
+  D.legalMoves(start, 0);
+  t.ok('applyMove lässt das Brett in Ruhe', JSON.stringify(start) === vorher);
+  
+  // --- Dauerlauf: 300 Zufallspartien ---
+  // Der hier hat den Fehler gefunden, bei dem die Suche nach Schlagfolgen im
+  // Kreis lief, weil beim Kopieren des Bretts die Markierung "schon genommen"
+  // verloren ging. Ohne ihn friert eine solche Stellung den Browser ein.
+  let seed = 12345;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  let partien = 0, haenger = 0, schlagFehler = 0, eigeneVerloren = 0, umwandlungen = 0;
+  let groessterSprung = 0, laengste = 0, absturz = null;
+  const enden = {};
+
+  try {
+    for (let g = 0; g < 300; g++) {
+      let b = D.startBoard(), side = 0, n = 0;
+      while (n < 600) {
+        const o = D.outcome(b, side);
+        if (o.over) { enden[o.reason] = (enden[o.reason] || 0) + 1; break; }
+        const zuege = D.legalMoves(b, side);
+        const zug = zuege[Math.floor(rnd() * zuege.length)];
+        groessterSprung = Math.max(groessterSprung, zug.captures.length);
+
+        const gegnerVorher = D.countPieces(b, side === 0 ? 1 : 0).total;
+        const eigeneVorher = D.countPieces(b, side).total;
+        const r = D.applyMove(b, zug);
+        if (gegnerVorher - D.countPieces(r.board, side === 0 ? 1 : 0).total !== zug.captures.length) schlagFehler++;
+        if (D.countPieces(r.board, side).total !== eigeneVorher) eigeneVerloren++;
+        if (r.promoted) umwandlungen++;
+
+        b = r.board; side = side === 0 ? 1 : 0; n++;
+      }
+      if (n >= 600) haenger++;
+      laengste = Math.max(laengste, n);
+      partien++;
+    }
+  } catch (error) {
+    absturz = error && error.message ? error.message : String(error);
+  }
+
+  t.equal('300 Zufallspartien laufen ohne Absturz durch', absturz, null);
+  t.equal('alle 300 Partien gespielt', partien, 300);
+  t.equal('keine Partie hängt (Schlagfolge im Kreis)', haenger, 0);
+  t.equal('geschlagene Steine stimmen immer', schlagFehler, 0);
+  t.equal('niemand verliert eigene Steine', eigeneVerloren, 0);
+  t.ok('jede Partie endet mit einem Grund', Object.keys(enden).length > 0 && enden.steine > 0, enden);
+  t.ok('Partien haben vernünftige Länge', laengste > 10 && laengste < 600, laengste);
+  t.ok('Steine werden zu Damen', umwandlungen > 0, umwandlungen);
+  t.ok('Mehrfachsprünge kommen vor', groessterSprung >= 2, groessterSprung);
+  t.ok('kein Sprung nimmt mehr als zwölf Steine', groessterSprung <= 12, groessterSprung);
+};
