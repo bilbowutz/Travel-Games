@@ -13,6 +13,14 @@
       status: 'ready'
     },
     {
+      id: 'superhirn',
+      name: 'Superhirn',
+      emoji: '🧠',
+      description: 'Geheime Farbreihe knacken, zu zweit',
+      href: 'games/superhirn/',
+      status: 'ready'
+    },
+    {
       id: 'dame',
       name: 'Dame',
       emoji: '⚪',

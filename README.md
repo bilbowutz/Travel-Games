@@ -16,6 +16,10 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
   Flotte sieht. Beim Aufstellen liegt die Flotte schon fertig da: Schiff
   antippen, aufs Wasser tippen zum Verschieben, nochmal aufs Schiff zum
   Drehen – die übrigen Schiffe weichen von selbst aus.
+- **Superhirn** – einer legt eine geheime Farbreihe, der andere knackt sie.
+  Nach jedem Versuch gibt es Stifte: voll für richtige Farbe am richtigen
+  Platz, hohl für richtige Farbe an falscher Stelle. Welcher Stift zu welcher
+  Stelle gehört, wird nicht verraten.
 - **Dame** – der Klassiker zu zweit auf einem Brett. Mit Schlagzwang,
   rückwärts schlagenden Steinen und fliegender Dame. Die ziehbaren Steine sind
   markiert, ein Mehrfachsprung zeigt am Zielfeld, wie viele dabei fallen.
@@ -44,7 +48,7 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
 node tests/run.js
 ```
 
-665 Prüfungen über Regeln, Inhalte und Gerüst – ohne Installation, ohne
+747 Prüfungen über Regeln, Inhalte und Gerüst – ohne Installation, ohne
 Browser, in unter einer Sekunde. Einzelheiten in [tests/README.md](tests/README.md).
 
 ## Features
@@ -153,6 +157,11 @@ games/
     game.css                Farbkacheln, Punktestand
     game.js                 Spiellogik, Zähler, Rückgängig, Code, Speichern
     colors.js               Autofarben mit passender Schriftfarbe
+  superhirn/
+    index.html              Spielseite
+    game.css                Farbsteine, Verlauf, Ablage
+    game.js                 Legen, Raten, Punkte, Speichern
+    rules.js                Auswertung und Punktevergabe (getrennt testbar)
   dame/
     index.html              Spielseite
     game.css                Brett, Steine, Zielfelder
@@ -249,6 +258,14 @@ sonst stimmen die Buchstabenfelder im Galgenmännchen nicht.
 **Mäxchen-Rangfolge** steht in `games/maexchen/rules.js`. Sie ist unintuitiv und
 deshalb bewusst als Liste gepflegt: 31 bis 65 aufsteigend, darüber alle Päsche,
 ganz oben das Mäxchen (21). Wer einen Pasch ansagt und nur 65 hat, hat geblufft.
+
+**Superhirn-Farben** stehen oben in `games/superhirn/rules.js`. Jede trägt
+neben Name und Farbwert ein eigenes Zeichen – wer Rot und Grün schlecht
+unterscheidet, spielt sonst blind. `ink` sagt, ob das Zeichen hell oder dunkel
+sein muss. Die Auswertung in `judge` zieht erst die vollen Stifte ab und prüft
+nur den Rest auf hohle; wer es andersherum macht, zählt bei doppelten Farben zu
+viele. Genau diesen Fall deckt `tests/superhirn.test.js` über alle 216×216
+Paare ab.
 
 **Dame-Hausregeln** stehen als Schalter oben in `games/dame/rules.js`, weil sie
 jede Familie ein bisschen anders kennt. Voreingestellt ist die in Deutschland

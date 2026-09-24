@@ -1,0 +1,278 @@
+/* Superhirn – spielspezifische Styles */
+
+:root {
+  --sh-slot: #e6e6eb;
+  --sh-slot-line: #d2d2d8;
+  --sh-pin: #1c1c1e;
+  --sh-pin-empty: #d2d2d8;
+  --sh-win: #34c759;
+}
+
+[data-theme="dark"] {
+  --sh-slot: #2c2c2e;
+  --sh-slot-line: #3a3a3c;
+  --sh-pin: #f2f2f7;
+  --sh-pin-empty: #48484a;
+  --sh-win: #30d158;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --sh-slot: #2c2c2e;
+    --sh-slot-line: #3a3a3c;
+    --sh-pin: #f2f2f7;
+    --sh-pin-empty: #48484a;
+    --sh-win: #30d158;
+  }
+}
+
+#set-title, #guess-title { font-size: 17px; overflow-wrap: anywhere; }
+
+.sh-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.sh-hint {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ---------- Farbsteine ---------- */
+
+/* Jeder Stein trägt sein Zeichen: Rot und Grün lassen sich sonst nicht
+   sicher auseinanderhalten. */
+.sh-peg {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--sh-slot);
+  box-shadow: 0 0 0 1px var(--sh-slot-line) inset;
+  font-size: clamp(11px, 3.6vw, 18px);
+  line-height: 1;
+}
+
+button.sh-peg { cursor: pointer; }
+button.sh-peg:active { transform: scale(.92); }
+
+.sh-peg.has-light-ink { color: rgba(255, 255, 255, .85); }
+.sh-peg.has-dark-ink { color: rgba(0, 0, 0, .6); }
+
+.sh-peg.is-empty { color: transparent; }
+
+.sh-peg--small { font-size: clamp(9px, 2.8vw, 14px); }
+
+/* Ohne Wiederholung ist eine gelegte Farbe verbraucht. */
+.sh-peg.is-spent {
+  opacity: .28;
+  box-shadow: 0 0 0 1px var(--sh-slot-line) inset;
+}
+
+/* ---------- Eine Reihe aus Steinen ---------- */
+
+.sh-code {
+  display: grid;
+  grid-template-columns: repeat(var(--stellen, 4), 1fr);
+  gap: 10px;
+  margin: 18px auto 0;
+  padding: 0;
+  max-width: 320px;
+  list-style: none;
+}
+
+.sh-code--reveal {
+  max-width: 260px;
+  margin-top: 10px;
+}
+
+/* Im Verlauf zaehlt Uebersicht: bei zehn Versuchen muessen alle Zeilen
+   gleichzeitig auf den Schirm passen, sonst kann man nicht kombinieren.
+   Feste Steingroesse statt mitwachsender Spalten. */
+.sh-code--row {
+  flex: 1;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: none;
+  justify-content: start;
+  margin: 0;
+  max-width: none;
+  gap: 6px;
+}
+
+.sh-code--row .sh-peg { width: 28px; }
+
+/* ---------- Verlauf ---------- */
+
+.sh-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sh-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.sh-row__number {
+  flex: none;
+  width: 18px;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+.sh-rows__empty {
+  padding: 14px 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.sh-rows--small .sh-row { padding: 5px 10px; }
+
+/* ---------- Auswertung ---------- */
+
+/* Volle Stifte zuerst, dann hohle, dann leere. Die Reihenfolge sagt nichts
+   über die Stellen aus – genau darin besteht das Spiel. */
+.sh-judge {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(3, 8px);
+  gap: 3px;
+  justify-content: end;
+}
+
+.sh-pin {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: transparent;
+  /* Ungenutzte Plaetze nur andeuten, sonst haelt man sie fuer hohle Stifte. */
+  box-shadow: 0 0 0 1px var(--sh-pin-empty) inset;
+  opacity: .35;
+}
+
+.sh-pin.is-black {
+  background: var(--sh-pin);
+  box-shadow: none;
+  opacity: 1;
+}
+
+.sh-pin.is-white {
+  background: transparent;
+  box-shadow: 0 0 0 2.5px var(--sh-pin) inset;
+  opacity: 1;
+}
+
+.sh-set-note {
+  margin: 24px 0 0;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.sh-reveal-label {
+  margin: 18px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ---------- Ablage ueber der Knopfleiste ---------- */
+
+/* Die Reihe, an der gerade gebaut wird, plus die Farben. Beides muss stehen
+   bleiben, waehrend man oben im Verlauf blaettert - sonst baut man blind. */
+.sh-tray {
+  position: fixed;
+  left: 0;
+  right: 0;
+  /* --leiste misst game.js aus der Knopfleiste; der Rückfallwert greift nur,
+     bis das erste Mal gemessen wurde. */
+  bottom: calc(var(--viewport-bottom, 0px) + var(--leiste, 92px));
+  z-index: 39;
+  padding: 10px 16px 12px;
+  background: var(--bg);
+  border-top: var(--hairline) solid var(--border);
+}
+
+.sh-tray__inner {
+  max-width: var(--maxw);
+  margin-inline: auto;
+}
+
+.sh-tray .sh-code--current {
+  margin: 0 auto;
+  max-width: 244px;
+}
+
+.sh-tray .sh-hint { margin: 8px 0 10px; }
+
+.sh-palette {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Die Ablage verdeckt sonst den unteren Teil des Verlaufs. */
+body.has-tray .game-main {
+  padding-bottom: calc(var(--leiste, 92px) + var(--ablage, 176px) + 16px);
+}
+
+/* ---------- Endstand ---------- */
+
+.sh-standings { margin-top: 16px; }
+
+.sh-standing {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 2px 12px;
+  min-height: 60px;
+  padding: 12px 16px;
+}
+
+.sh-standing__name {
+  font-size: 17px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.sh-standing__detail {
+  grid-column: 1;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.sh-standing__points {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-size: 28px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.sh-standing.is-winner .sh-standing__points { color: var(--sh-win); }

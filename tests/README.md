@@ -19,6 +19,7 @@ erwartet, stellt `harness.js` eine Attrappe bereit, die gerade genug kann.
 | --- | --- |
 | `geteilt.test.js` | Rundencodes, Zufall mit Startwert, Mischen |
 | `qr.test.js` | Suchmuster, Taktzeile und Größen des eigenen QR-Erzeugers |
+| `superhirn.test.js` | Auswertung über alle 216×216 Paare, doppelte Farben |
 | `dame.test.js` | Hausregeln an gestellten Diagrammen, dazu 300 Zufallspartien |
 | `schiffe-versenken.test.js` | Aufstellung, Abstandsregel, Schüsse, Versenken |
 | `maexchen.test.js` | die unintuitive Rangfolge und das Urteil beim Aufdecken |

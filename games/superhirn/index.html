@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Superhirn – Travel Games</title>
+<meta name="description" content="Superhirn mit Farben: einer legt eine geheime Reihe, der andere rät. Zu zweit auf einem Handy, offline spielbar.">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Superhirn">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="game.css">
+<script>
+  try {
+    var m = JSON.parse(localStorage.getItem('travelgames.theme'));
+    if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-theme', m);
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__bar">
+      <a class="back-link" href="../../"><span data-icon="chevron-left"></span>Spiele</a>
+      <span class="spacer"></span>
+      <button type="button" class="icon-btn" id="theme-toggle"></button>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="Einstellungen" data-icon="gear"></button>
+    </div>
+    <h1 class="hero__title">Superhirn</h1>
+    <p class="hero__sub">Einer legt eine geheime Farbreihe, der andere knackt sie.</p>
+  </div>
+</header>
+
+<main class="wrap game-main">
+
+  <!-- Namen -->
+  <section id="setup">
+    <div class="panel">
+      <h2>Wer gegen wen?</h2>
+      <p class="panel__hint">Zwei Namen. Ihr legt abwechselnd, das Handy wandert hin und her.</p>
+      <ul class="name-list" id="name-list"></ul>
+      <p class="panel__hint" id="setup-summary">–</p>
+    </div>
+  </section>
+
+  <!-- Code legen -->
+  <section id="set" hidden>
+    <div class="status">
+      <p class="status__count" id="set-title">Code legen</p>
+      <p class="sh-note" id="set-left">–</p>
+    </div>
+
+    <ol class="sh-code" id="draft"></ol>
+
+    <p class="sh-hint" id="set-hint">–</p>
+  </section>
+
+  <!-- Raten -->
+  <section id="guess" hidden>
+    <div class="status">
+      <p class="status__count" id="guess-title">Raten</p>
+      <p class="sh-note" id="guess-left">–</p>
+    </div>
+
+    <ol class="sh-rows" id="rows"></ol>
+  </section>
+
+  <!-- Runde vorbei -->
+  <section id="round" hidden>
+    <div class="panel">
+      <h2 id="round-title">Vorbei</h2>
+      <p class="panel__hint" id="round-text">–</p>
+    </div>
+
+    <p class="sh-reveal-label">Der Code war</p>
+    <ol class="sh-code sh-code--reveal" id="reveal"></ol>
+
+    <ol class="sh-rows sh-rows--small" id="round-rows"></ol>
+  </section>
+
+  <!-- Ergebnis -->
+  <section id="over" hidden>
+    <div class="panel">
+      <h2 id="over-title">Vorbei</h2>
+      <p class="panel__hint" id="over-text">–</p>
+    </div>
+    <ul class="list-group sh-standings" id="standings"></ul>
+  </section>
+
+  <details class="rules">
+    <summary>So wird gespielt</summary>
+    <ul>
+      <li>Wer dran ist, legt heimlich eine Reihe aus Farben und gibt das Handy weiter.</li>
+      <li>Der andere legt eine Reihe als Versuch und tippt auf „Raten“.</li>
+      <li>Danach kommt die Auswertung als Stifte rechts daneben:
+        <strong>voller Punkt</strong> = richtige Farbe am richtigen Platz,
+        <strong>hohler Punkt</strong> = richtige Farbe, aber woanders.</li>
+      <li>Welcher Stift zu welcher Stelle gehört, wird <em>nicht</em> verraten –
+          das herauszufinden ist das Spiel.</li>
+      <li>Geschafft? Je weniger Versuche, desto mehr Punkte. Nicht geschafft: keine.</li>
+      <li>Dann Rollentausch. Wer nach allen Runden vorn liegt, gewinnt.</li>
+      <li>Jede Farbe trägt ein eigenes Zeichen – man kann auch danach gehen.</li>
+    </ul>
+  </details>
+
+</main>
+
+<!-- Ablage: die Reihe, an der gerade gebaut wird, plus die Farben.
+     Steht fest über der Knopfleiste, damit sie beim Blättern im Verlauf
+     nicht verschwindet. -->
+<div class="sh-tray" id="tray" hidden>
+  <div class="sh-tray__inner">
+    <ol class="sh-code sh-code--current" id="current"></ol>
+    <p class="sh-hint" id="guess-hint">–</p>
+    <ul class="sh-palette" id="palette-list"></ul>
+  </div>
+</div>
+
+<div class="actionbar">
+  <div class="actionbar__inner" id="setup-actions">
+    <button type="button" class="btn btn--primary" id="start-game">Los geht’s</button>
+  </div>
+  <div class="actionbar__inner" id="set-actions" hidden>
+    <button type="button" class="btn" id="shuffle-code">Würfeln</button>
+    <button type="button" class="btn btn--primary" id="set-done">Fertig – versteckt →</button>
+  </div>
+  <div class="actionbar__inner" id="guess-actions" hidden>
+    <button type="button" class="btn" id="clear-guess">Leeren</button>
+    <button type="button" class="btn btn--primary" id="submit-guess">Raten</button>
+  </div>
+  <div class="actionbar__inner" id="round-actions" hidden>
+    <button type="button" class="btn btn--primary" id="next-round">Weiter</button>
+  </div>
+  <div class="actionbar__inner" id="over-actions" hidden>
+    <button type="button" class="btn" id="new-names">Neue Namen</button>
+    <button type="button" class="btn btn--primary" id="rematch">Revanche</button>
+  </div>
+</div>
+
+<!-- Übergabe -->
+<div class="curtain" id="curtain" hidden>
+  <div class="curtain__inner">
+    <p class="curtain__icon" aria-hidden="true">🙈</p>
+    <h2 class="curtain__title" id="curtain-title">Weitergeben</h2>
+    <p class="curtain__note" id="curtain-note"></p>
+    <button type="button" class="btn btn--primary btn--block" id="curtain-go">Weiter</button>
+  </div>
+</div>
+
+<!-- Einstellungen -->
+<dialog class="sheet" id="settings">
+  <div class="sheet__inner">
+    <div class="sheet__grip" aria-hidden="true"></div>
+    <h2>Einstellungen</h2>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="length-label">Stellen im Code</span>
+      <div class="segmented" role="group" aria-labelledby="length-label" id="length-picker">
+        <button type="button" data-length="3">3</button>
+        <button type="button" data-length="4">4</button>
+        <button type="button" data-length="5">5</button>
+      </div>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="tries-label">Versuche</span>
+      <div class="segmented" role="group" aria-labelledby="tries-label" id="tries-picker">
+        <button type="button" data-tries="8">8</button>
+        <button type="button" data-tries="10">10</button>
+        <button type="button" data-tries="12">12</button>
+      </div>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="repeats-label">Farben dürfen sich wiederholen</span>
+      <div class="segmented" role="group" aria-labelledby="repeats-label" id="repeats-picker">
+        <button type="button" data-repeats="ja">Ja</button>
+        <button type="button" data-repeats="nein">Nein</button>
+      </div>
+      <p class="code-hint" id="combos-hint">–</p>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label" id="rounds-label">Runden pro Person</span>
+      <div class="segmented" role="group" aria-labelledby="rounds-label" id="rounds-picker">
+        <button type="button" data-rounds="1">1</button>
+        <button type="button" data-rounds="2">2</button>
+        <button type="button" data-rounds="3">3</button>
+      </div>
+    </div>
+
+    <div class="sheet__group">
+      <span class="sheet__label">Partie</span>
+      <p class="code-hint" id="game-summary">–</p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--block btn--danger" id="reset-game">Partie abbrechen</button>
+      </div>
+    </div>
+
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--block btn--primary" id="close-settings">Fertig</button>
+    </div>
+    <p class="sheet__hint" id="storage-hint">Alles wird nur lokal auf diesem Gerät gespeichert.</p>
+  </div>
+</dialog>
+
+<dialog class="confirm" id="confirm">
+  <h2 id="confirm-title">Sicher?</h2>
+  <p id="confirm-text"></p>
+  <div class="sheet__actions">
+    <button type="button" class="btn btn--block btn--primary" id="confirm-ok">Ja</button>
+    <button type="button" class="btn btn--block btn--ghost" id="confirm-cancel">Abbrechen</button>
+  </div>
+</dialog>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="toast-host" role="status" aria-live="polite"></div>
+
+<script src="../../assets/js/app.js"></script>
+<script src="../../assets/js/confetti.js"></script>
+<script src="rules.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

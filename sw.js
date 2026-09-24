@@ -1,6 +1,6 @@
 /* Offline-Cache für Travel Games.
    CACHE hochzählen, wenn sich Dateien geändert haben. */
-const CACHE = 'travel-games-v20';
+const CACHE = 'travel-games-v21';
 
 const PRECACHE = [
   './',
@@ -67,6 +67,11 @@ const PRECACHE = [
   './games/kritzelbild/game.css',
   './games/kritzelbild/game.js',
   './games/kritzelbild/shapes.js',
+  './games/superhirn/',
+  './games/superhirn/index.html',
+  './games/superhirn/game.css',
+  './games/superhirn/game.js',
+  './games/superhirn/rules.js',
   './games/dame/',
   './games/dame/index.html',
   './games/dame/game.css',
