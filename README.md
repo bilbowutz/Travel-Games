@@ -16,6 +16,9 @@ keine Cookies**. Spielstände liegen ausschließlich im `localStorage` des Brows
   Flotte sieht. Beim Aufstellen liegt die Flotte schon fertig da: Schiff
   antippen, aufs Wasser tippen zum Verschieben, nochmal aufs Schiff zum
   Drehen – die übrigen Schiffe weichen von selbst aus.
+- **Dame** – der Klassiker zu zweit auf einem Brett. Mit Schlagzwang,
+  rückwärts schlagenden Steinen und fliegender Dame. Die ziehbaren Steine sind
+  markiert, ein Mehrfachsprung zeigt am Zielfeld, wie viele dabei fallen.
 - **Fotojagd** – einer geht außer Sichtweite und macht fünf Fotos von einer
   Stelle, der andere sucht sie. Gesucht wird zuerst nur mit Foto 1; jedes
   weitere Foto kostet einen Punkt. Die Bilder bleiben auf dem Gerät.
@@ -141,6 +144,11 @@ games/
     game.css                Farbkacheln, Punktestand
     game.js                 Spiellogik, Zähler, Rückgängig, Code, Speichern
     colors.js               Autofarben mit passender Schriftfarbe
+  dame/
+    index.html              Spielseite
+    game.css                Brett, Steine, Zielfelder
+    game.js                 Auswahl, Züge, Rückgängig, Speichern
+    rules.js                Regelwerk ohne Oberfläche (getrennt testbar)
   fotojagd/
     index.html              Spielseite
     game.css                Fotoplätze, Suchansicht, Vollbild
@@ -232,6 +240,14 @@ sonst stimmen die Buchstabenfelder im Galgenmännchen nicht.
 **Mäxchen-Rangfolge** steht in `games/maexchen/rules.js`. Sie ist unintuitiv und
 deshalb bewusst als Liste gepflegt: 31 bis 65 aufsteigend, darüber alle Päsche,
 ganz oben das Mäxchen (21). Wer einen Pasch ansagt und nur 65 hat, hat geblufft.
+
+**Dame-Hausregeln** stehen als Schalter oben in `games/dame/rules.js`, weil sie
+jede Familie ein bisschen anders kennt. Voreingestellt ist die in Deutschland
+übliche Variante: Schlagzwang, Steine schlagen auch rückwärts, die Dame zieht
+und schlägt beliebig weit, und es gibt keinen Zwang zum längsten Schlag.
+Zwei Feinheiten, über die man sich sonst streitet, sind ebenfalls festgelegt:
+Geschlagene Steine bleiben bis zum Ende des Zuges liegen und versperren den Weg,
+und wer beim Springen nur durch die Grundlinie zieht, wird keine Dame.
 
 **Fotos der Fotojagd** liegen als einziges Spiel nicht im `localStorage`,
 sondern in **IndexedDB** (`games/fotojagd/photos.js`). Der localStorage fasst je

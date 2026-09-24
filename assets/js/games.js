@@ -13,6 +13,14 @@
       status: 'ready'
     },
     {
+      id: 'dame',
+      name: 'Dame',
+      emoji: '⚪',
+      description: 'Der Klassiker zu zweit, mit Schlagzwang',
+      href: 'games/dame/',
+      status: 'ready'
+    },
+    {
       id: 'fotojagd',
       name: 'Fotojagd',
       emoji: '📷',

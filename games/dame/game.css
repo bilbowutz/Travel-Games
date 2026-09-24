@@ -1,0 +1,199 @@
+/* Dame – spielspezifische Styles */
+
+:root {
+  --dm-light-square: #eadfc8;
+  --dm-dark-square: #9c7a52;
+  --dm-light-piece: #fdfbf6;
+  --dm-light-edge: #c9bda6;
+  --dm-dark-piece: #2b2118;
+  --dm-dark-edge: #0f0b07;
+  --dm-pick: #0a84ff;
+  --dm-taken: #ff3b30;
+}
+
+[data-theme="dark"] {
+  --dm-light-square: #6f6455;
+  --dm-dark-square: #40382e;
+  --dm-light-piece: #f2ece1;
+  --dm-light-edge: #b5aa96;
+  --dm-dark-piece: #1a1512;
+  --dm-dark-edge: #000000;
+  --dm-taken: #ff453a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --dm-light-square: #6f6455;
+    --dm-dark-square: #40382e;
+    --dm-light-piece: #f2ece1;
+    --dm-light-edge: #b5aa96;
+    --dm-dark-piece: #1a1512;
+    --dm-dark-edge: #000000;
+    --dm-taken: #ff453a;
+  }
+}
+
+#turn-name { font-size: 17px; overflow-wrap: anywhere; }
+
+.dm-last {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.dm-hint {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ---------- Brett ---------- */
+
+.dm-board-wrap {
+  margin: 18px auto 0;
+  max-width: 440px;
+}
+
+/* Feste Höhe über das Seitenverhältnis, sonst fallen die Reihen auf null
+   zusammen und nichts lässt sich treffen. */
+.dm-board {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  aspect-ratio: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.dm-cell {
+  display: grid;
+  place-items: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: var(--dm-light-square);
+}
+
+.dm-cell.is-dark { background: var(--dm-dark-square); }
+
+button.dm-cell { cursor: pointer; }
+
+/* Ziehbare Steine bekommen einen Ring, damit der Schlagzwang sichtbar ist. */
+.dm-cell.is-movable::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 6px;
+  box-shadow: 0 0 0 2px var(--dm-pick) inset;
+  opacity: .55;
+}
+
+.dm-cell.is-selected::before {
+  opacity: 1;
+  box-shadow: 0 0 0 3px var(--dm-pick) inset;
+  background: color-mix(in srgb, var(--dm-pick) 22%, transparent);
+}
+
+.dm-cell.is-taken { animation: dm-taken .42s ease; }
+
+@keyframes dm-taken {
+  0%, 60% { background: var(--dm-taken); }
+  100% { background: var(--dm-dark-square); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dm-cell.is-taken { animation: none; }
+}
+
+/* ---------- Steine ---------- */
+
+.dm-piece {
+  display: grid;
+  place-items: center;
+  width: 78%;
+  height: 78%;
+  border-radius: 50%;
+  font-size: clamp(9px, 5cqw, 20px);
+  line-height: 1;
+}
+
+.dm-piece.is-light {
+  background: var(--dm-light-piece);
+  box-shadow: 0 0 0 1px var(--dm-light-edge) inset, 0 1px 2px rgba(0, 0, 0, .25);
+  color: var(--dm-dark-piece);
+}
+
+.dm-piece.is-dark {
+  background: var(--dm-dark-piece);
+  box-shadow: 0 0 0 1px var(--dm-dark-edge) inset, 0 1px 2px rgba(0, 0, 0, .3);
+  color: var(--dm-light-piece);
+}
+
+/* Die Krone sitzt in einem Ring, damit eine Dame auch ohne Farbe erkennbar ist. */
+.dm-piece.is-king {
+  box-shadow: 0 0 0 2px currentColor inset, 0 1px 2px rgba(0, 0, 0, .3);
+}
+
+.dm-piece--mini {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+/* ---------- Zielfelder ---------- */
+
+.dm-dot {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 34%;
+  height: 34%;
+  border-radius: 50%;
+  background: var(--dm-pick);
+  color: #fff;
+  font-size: clamp(9px, 4cqw, 15px);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.dm-dot.is-capture {
+  width: 48%;
+  height: 48%;
+  background: var(--dm-taken);
+}
+
+/* ---------- Steinzähler ---------- */
+
+.dm-tally {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dm-tally__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 13px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.dm-tally__item.is-turn {
+  box-shadow: 0 0 0 2px var(--dm-pick) inset;
+  font-weight: 700;
+}
+
+.dm-board--final { pointer-events: none; }
